@@ -193,7 +193,7 @@
   if (params.get("demo") === "1" && !getIdentity()) setIdentity("Demo Room 3", "rehearsal");
   const DEMO = params.get("demo") === "1";
 
-  const me = getIdentity();
+  let me = getIdentity();  // reassigned the moment sign-in succeeds — see #go handler
 
   function paintWho(){
     ["whoName","whoName2","whoName3","whoName4","whoName5"].forEach(id => {
@@ -362,7 +362,7 @@
   $("#go").addEventListener("click", () => {
     const team = $("#team").value.trim();
     if (!team){ toast("Give your team a name first", true); $("#team").focus(); return; }
-    setIdentity(team, $("#members").value);
+    me = setIdentity(team, $("#members").value);   // update the live reference, not just storage
     boot();
   });
   $("#team").addEventListener("keydown", e => { if (e.key === "Enter") $("#go").click(); });
@@ -452,10 +452,9 @@
 
   /* ---------- boot ---------- */
   function boot(){
-    const id = getIdentity();
-    if (!id){ show("signin"); return; }
+    if (!me){ show("signin"); return; }
     paintWho();
-    BRIEF = pickBrief(id.team);
+    BRIEF = pickBrief(me.team);
     $("#briefTag").textContent = BRIEF.title;
     $("#briefText").textContent = BRIEF.scenario;
     $("#briefTag2").textContent = BRIEF.title;
@@ -463,7 +462,8 @@
     show("brief");
   }
 
-  if (getIdentity()) boot(); else show("signin");
+  if (me) boot(); else show("signin");
+
 
 })();
 </script>
