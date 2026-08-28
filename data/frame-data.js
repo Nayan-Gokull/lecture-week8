@@ -61,8 +61,28 @@ window.FRAME_CATEGORIES = [
   { id: "light",      label: "Lighting",               min: 1, max: 2 },
   { id: "audio",      label: "Audio",                  min: 0, max: 2 },
   { id: "legibility", label: "Legibility & UI",         min: 1, max: 1 },
-  { id: "render",     label: "Rendering & assets",      min: 1, max: 2 },
+  { id: "render",     label: "Rendering & assets",      min: 1, max: 1, locked: true },
 ];
+
+/* Rendering & assets is no longer a free pick here. This is now stage 3
+   of a three-stage pipeline (source.html -> scene.html -> this page):
+   whatever scene a team actually built in scene.html — its draw calls
+   and texture footprint, including the hero asset they sourced under a
+   real licence in source.html — determines what rendering that scene
+   costs per frame. A team does not get to separately "buy" a cheap
+   render tier here after building an expensive scene; the scene they
+   built is the render cost.
+
+   The formula mirrors the shape of the old picklist (r_lod .3 / r_atlas
+   .2 up to r_hero 1.5): draw calls dominate CPU-side submission cost,
+   texture memory dominates bandwidth/decode cost, matching the same
+   "draw calls and texture memory break a scene before triangle count
+   does" lesson the Model Lab's own Budget Table teaches. Triangle count
+   is deliberately not a term in this formula, for the same reason. */
+function renderMsFromScene(draws, textureMB) {
+  return Math.round((0.05 + draws * 0.018 + textureMB * 0.012) * 10) / 10;
+}
+window.FRAME_RENDER_MS_FROM_SCENE = renderMsFromScene;
 
 /* flags: risky = a real design gap the admin board will call out
           deviceGate = ships on premium hardware only
@@ -99,9 +119,9 @@ window.FRAME_CATEGORIES = [
      priced as the second most expensive item on the whole sheet for
      exactly that reason.
 
-   - Rendering: mirrors the Model Lab's own Budget Table numbers directly
-     — an atlased/LOD asset is cheap because it collapses draw calls, an
-     unoptimised hero asset is expensive because it does not.
+   - Rendering: no longer a picklist here at all — see the comment above
+     window.FRAME_RENDER_MS_FROM_SCENE. It is derived from whatever scene
+     a team actually assembled in scene.html.
 
    - Legibility: every option here is a flat UI overlay pass (an outline,
      a scrim, a backplate), which is why the whole category sits at the
@@ -151,15 +171,7 @@ window.FRAME_OPTIONS = [
   { id: "x_backplate", category: "legibility", label: "Opaque backplate",
     note: "Most robust option. Costs the most camera visibility.", ms: 0.2 },
 
-  // ---- Rendering & assets ----
-  { id: "r_lod",   category: "render", label: "Optimised / LOD model",
-    note: "Cheap. Swaps in a lower-detail mesh at distance.", ms: 0.3 },
-  { id: "r_atlas", category: "render", label: "Atlased textures",
-    note: "Merges materials so the object costs one draw call instead of many.", ms: 0.2 },
-  { id: "r_hires", category: "render", label: "High-res unique textures",
-    note: "Sharper up close. Costs memory and load time.", ms: 0.9 },
-  { id: "r_hero",  category: "render", label: "Hero unoptimised model",
-    note: "Best fidelity available. The heaviest single line item on this list.", ms: 1.5 },
+  // Rendering & assets has no static options — see FRAME_RENDER_MS_FROM_SCENE.
 ];
 
 /* throttleRatio replaces a fixed round2Cap so the same per-brief

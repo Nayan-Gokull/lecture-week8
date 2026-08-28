@@ -69,6 +69,47 @@
 
   function clearIdentity() { try { localStorage.removeItem(IDKEY); } catch {} }
 
+  /* ---------- deterministic brief assignment ----------
+     Same hash-based technique used by every activity here: a team's
+     name alone decides which scenario they get, so every stage of a
+     multi-stage pipeline agrees on the same brief for the same team
+     without a server round trip, and it cannot be gamed by retyping
+     the name to fish for an easier one (the hash does not favour any
+     input). Not security-relevant, so nothing here needs secrecy. */
+  function pickBrief(team, list) {
+    let h = 0;
+    const s = String(team || "").toLowerCase();
+    for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
+    return list[h % list.length];
+  }
+
+  /* ---------- pipeline handoff storage ----------
+     "Spend the Frame" is now the third stage of a three-stage pipeline
+     (source.html -> scene.html -> index.html). Each stage writes what
+     it decided into one object here, keyed by team name, so the next
+     stage can read it without a server round trip — nothing here is
+     scored until the final submission, which sends the whole thing to
+     the server for authoritative recomputation. */
+  const pipeKey = (team) => "framepipe.v1." + String(team || "").trim().toLowerCase();
+
+  function getPipe(team) {
+    try {
+      const raw = localStorage.getItem(pipeKey(team));
+      return raw ? JSON.parse(raw) : {};
+    } catch { return {}; }
+  }
+
+  function setPipe(team, patch) {
+    const cur = getPipe(team);
+    const next = Object.assign({}, cur, patch);
+    try { localStorage.setItem(pipeKey(team), JSON.stringify(next)); } catch {}
+    return next;
+  }
+
+  function clearPipe(team) {
+    try { localStorage.removeItem(pipeKey(team)); } catch {}
+  }
+
   /* ---------- one-shot submission guard ----------
      Mirrors the Hick's Law lab: a team gets one submission per activity.
      Stops a room from quietly re-rolling until they like their answer.   */
@@ -197,7 +238,8 @@
   window.ML = {
     $, $$, esc, clamp,
     fmtInt, fmtBytes, fmtCompact, pct, stamp,
-    getIdentity, setIdentity, clearIdentity,
+    getIdentity, setIdentity, clearIdentity, pickBrief,
+    getPipe, setPipe, clearPipe,
     hasSubmitted, markSubmitted, clearSubmitted,
     toast, saveRun, fetchRuns, clearRuns,
     download, toCSV, bindPress, show, bindTabs,

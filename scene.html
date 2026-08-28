@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Ship It — Build the Scene — INTE 42312</title>
+<meta name="description" content="Stage 2 of 3: build the rest of the scene around your sourced hero asset, under real triangle / draw call / texture caps." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+<link rel="stylesheet" href="lab.css" />
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero-banner">
+    <span class="hero-mark">
+      <svg viewBox="0 0 24 24" fill="none">
+        <path d="M3 20h18M5 20V9h5v11M14 20V4h5v16" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </span>
+    <span class="hero-text">
+      <span class="hero-title">Ship It</span>
+      <span class="hero-sub">Stage 2 of 3 &middot; Build the scene</span>
+    </span>
+  </div>
+
+  <main class="main-stage">
+
+    <!-- ============ BRIEF ============ -->
+    <section id="brief">
+      <div class="teamid">
+        <span class="who" id="whoName"></span><span class="mem" id="whoMem"></span>
+      </div>
+
+      <div class="card">
+        <h1>Your hero asset is already placed. Build around it.</h1>
+        <div class="brief-scenario">
+          <span class="tag" id="briefTag"></span>
+          <p id="briefText"></p>
+        </div>
+
+        <div class="callout gold">
+          <b>Locked in from stage 1:</b>
+          <p id="heroSummary"></p>
+        </div>
+
+        <h3>Scene budget (hero included)</h3>
+        <div class="stat-grid">
+          <div class="stat"><span class="lbl">Triangles</span><span class="v" id="capTris"></span></div>
+          <div class="stat"><span class="lbl">Draw calls</span><span class="v" id="capDraws"></span></div>
+          <div class="stat"><span class="lbl">Texture memory</span><span class="v" id="capTex"></span></div>
+        </div>
+
+        <h3>The scene still needs</h3>
+        <ul class="reqlist" id="reqBrief"></ul>
+
+        <div class="callout">
+          <b>Whatever this scene costs to render carries straight into stage 3.</b>
+          <p>There is no separate "rendering tier" to pick later &mdash; the draw calls and texture memory you commit to here <em>are</em> the rendering cost your frame budget has to absorb.</p>
+        </div>
+
+        <div class="btnrow">
+          <button class="btn primary" id="start">Start building &rarr;</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ BUILD ============ -->
+    <section id="build" hidden>
+      <div class="teamid">
+        <span class="who" id="whoName2"></span><span class="mem" id="pickCount"></span>
+      </div>
+
+      <div class="worksplit scenebuild">
+      <div class="card meters" id="meters">
+        <div class="meter-row">
+          <div class="meter-head"><span class="name">Hero asset</span><span class="val" id="heroLine"></span></div>
+        </div>
+        <div class="meter-row">
+          <div class="meter-head"><span class="name">Triangles (tris)</span><span class="val" id="vTris"></span></div>
+          <div class="meter"><div class="meter-fill" id="fTris"></div></div>
+        </div>
+        <div class="meter-row">
+          <div class="meter-head"><span class="name">Draw calls</span><span class="val" id="vDraws"></span></div>
+          <div class="meter"><div class="meter-fill" id="fDraws"></div></div>
+        </div>
+        <div class="meter-row">
+          <div class="meter-head"><span class="name">Texture memory</span><span class="val" id="vTex"></span></div>
+          <div class="meter"><div class="meter-fill" id="fTex"></div></div>
+        </div>
+        <ul class="reqlist live" id="reqLive"></ul>
+      </div>
+
+      <div class="card assets">
+        <div class="hd"><h3>Available props</h3><span class="side">one version per object</span></div>
+        <div id="assetList"></div>
+      </div>
+
+      <div class="card submitcard">
+        <div class="btnrow">
+          <button class="btn primary" id="toReason" disabled>Submit this scene &rarr;</button>
+        </div>
+        <p class="fine" id="blockReason">Place the required items first.</p>
+      </div>
+      </div>
+    </section>
+
+    <!-- ============ REASON ============ -->
+    <section id="reason" hidden>
+      <div class="teamid"><span class="who" id="whoName3"></span><span class="mem">Last step</span></div>
+      <div class="card">
+        <h2>Which lever did you pull, and what did you give up?</h2>
+        <p class="lead">Your scene fits. What matters is knowing what it cost you, and what it will cost your frame budget in stage 3.</p>
+
+        <div class="opts" id="leverOpts"></div>
+
+        <div class="field">
+          <label for="just">In one line: what does the customer lose, if anything?</label>
+          <textarea class="input" id="just" rows="3" maxlength="240" placeholder="e.g. the backdrop goes a little softer up close, which nobody stands close enough to notice"></textarea>
+        </div>
+
+        <div class="btnrow">
+          <button class="btn ghost" id="backToBuild">&larr; Keep editing</button>
+          <button class="btn primary" id="submit">Submit &rarr;</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ DONE ============ -->
+    <section id="done" hidden>
+      <div class="teamid"><span class="who" id="whoName4"></span></div>
+      <div class="card" id="doneCard"></div>
+    </section>
+
+  </main>
+</div>
+
+<script src="common.js"></script>
+<script src="data/frame-data.js"></script>
+<script src="data/scene-data.js"></script>
+<script>
+(function(){
+  "use strict";
+  const { $, $$, esc, toast, show, fmtInt, clamp, bindPress,
+          getIdentity, pickBrief, getPipe, setPipe } = ML;
+
+  const BRIEFS = window.FRAME_BRIEFS || [];
+  const CAPS   = window.SCENE_CAPS || {};
+  const CATS   = window.SCENE_CATS || [];
+  const ASSETS = window.SCENE_ASSETS || [];
+  const LEVERS = window.SCENE_LEVERS || [];
+  const renderMsFromScene = window.FRAME_RENDER_MS_FROM_SCENE;
+
+  const byId = {};
+  ASSETS.forEach(a => { byId[a.id] = a; });
+  const groupOf = a => a.variantOf || a.id;
+  const CAT_LABEL = { setting: "Setting piece", decor: "Supporting decor", interface: "Interface element" };
+
+  const me = getIdentity();
+  if (!me){ location.replace("source.html"); return; }
+
+  const pipe = getPipe(me.team);
+  if (!pipe.source){ location.replace("source.html"); return; }
+
+  const BRIEF = pickBrief(me.team, BRIEFS);
+  const HERO = pipe.source.model;
+
+  ["whoName","whoName2","whoName3","whoName4"].forEach(id => { const el = $("#"+id); if (el) el.textContent = me.team; });
+  $("#whoMem").textContent = me.members ? "· " + me.members : "";
+  $("#briefTag").textContent = BRIEF.title;
+  $("#briefText").textContent = BRIEF.scenario;
+  $("#heroSummary").textContent = pipe.source.caseTitle + " (" + pipe.source.licence + ") — " +
+    HERO.tris.toLocaleString() + " tris, " + HERO.materials + " materials, " + HERO.textureMB + "MB.";
+  $("#capTris").textContent = fmtInt(CAPS.tris);
+  $("#capDraws").textContent = CAPS.draws;
+  $("#capTex").textContent = CAPS.textureMB + " MB";
+  $("#heroLine").textContent = fmtInt(HERO.tris) + " tris · " + HERO.materials + " draws · " + HERO.textureMB + " MB (locked)";
+
+  let picked = new Set();
+  let lever = null;
+
+  function paintReqs(mountSel, live){
+    const counts = {};
+    picked.forEach(id => { const c = byId[id].category; counts[c] = (counts[c]||0) + 1; });
+    const st = CATS.map(r => {
+      const n = counts[r.category] || 0;
+      return { req: r, n, met: n >= r.min && n <= r.max };
+    });
+    $(mountSel).innerHTML = st.map(s =>
+      '<li class="' + (live ? (s.met ? "met" : "unmet") : "") + '">' +
+        (live ? '<span class="tick">' + (s.met ? "&check;" : "&nbsp;") + '</span>' : '') +
+        esc(s.req.label) + (live ? ' <b>(' + s.n + ')</b>' : '') +
+      '</li>').join("");
+    return st;
+  }
+
+  function totals(){
+    let t = HERO.tris, d = HERO.materials, x = HERO.textureMB;
+    picked.forEach(id => { const a = byId[id]; t += a.tris; d += a.materials; x += a.textureMB; });
+    return { tris: t, draws: d, textureMB: x };
+  }
+
+  function paintMeters(){
+    const T = totals();
+    const rows = [
+      ["#vTris", "#fTris", T.tris, CAPS.tris, v => fmtInt(v)],
+      ["#vDraws", "#fDraws", T.draws, CAPS.draws, v => String(v)],
+      ["#vTex", "#fTex", T.textureMB, CAPS.textureMB, v => v + " MB"],
+    ];
+    rows.forEach(([vs, fs, used, cap, fmt]) => {
+      const p = cap > 0 ? (used / cap) * 100 : 0;
+      const el = $(vs), fill = $(fs);
+      el.textContent = fmt(used) + " / " + fmt(cap);
+      el.classList.toggle("over", used > cap);
+      fill.style.width = clamp(p, 0, 100).toFixed(1) + "%";
+      fill.className = "meter-fill" + (used > cap ? " over" : (p >= 80 ? " warn" : ""));
+    });
+    return T;
+  }
+
+  function refresh(){
+    const T = paintMeters();
+    const st = paintReqs("#reqLive", true);
+    const reqBad = st.filter(s => !s.met);
+    const overs = [];
+    if (T.tris > CAPS.tris) overs.push("triangles");
+    if (T.draws > CAPS.draws) overs.push("draw calls");
+    if (T.textureMB > CAPS.textureMB) overs.push("texture memory");
+
+    $("#pickCount").textContent = picked.size + (picked.size === 1 ? " prop placed" : " props placed");
+    const ok = !reqBad.length && !overs.length;
+    $("#toReason").disabled = !ok;
+
+    let msg;
+    if (overs.length && reqBad.length) msg = "Over budget on " + overs.join(" and ") + ", and still missing: " + reqBad.map(s => s.req.label.toLowerCase()).join(", ") + ".";
+    else if (overs.length) msg = "Over budget on " + overs.join(" and ") + ". Look at what each prop costs, not what it looks like.";
+    else if (reqBad.length) msg = "Still missing: " + reqBad.map(s => s.req.label.toLowerCase()).join(", ") + ".";
+    else msg = "Everything fits. You can keep improving it, or submit.";
+    $("#blockReason").textContent = msg;
+    $("#blockReason").className = "fine" + (ok ? " okmsg" : "");
+  }
+
+  function buildList(){
+    const cats = ["setting", "decor", "interface"];
+    let h = "";
+    cats.forEach(cat => {
+      const inCat = ASSETS.filter(a => a.category === cat);
+      if (!inCat.length) return;
+      h += '<h4 class="catname">' + esc(CAT_LABEL[cat] || cat) + '</h4><div class="picklist">';
+      inCat.forEach(a => {
+        h += '<button type="button" class="pick" data-id="' + esc(a.id) + '" aria-pressed="false">' +
+          '<span class="box"><svg viewBox="0 0 24 24"><path d="M4 12.5 9.5 18 20 6.5"/></svg></span>' +
+          '<span class="nm">' + esc(a.name) + (a.variantOf ? ' <em class="vtag">variant</em>' : '') +
+            '<span class="sub">' + esc(a.note) + '</span></span>' +
+          '<span class="fig"><b>' + fmtInt(a.tris) + '</b> tris<br>' +
+            a.materials + ' draw' + (a.materials === 1 ? '' : 's') + ' &middot; ' + a.textureMB + ' MB</span>' +
+        '</button>';
+      });
+      h += '</div>';
+    });
+    $("#assetList").innerHTML = h;
+    bindPress($("#assetList"));
+  }
+
+  $("#assetList").addEventListener("click", e => {
+    const btn = e.target.closest(".pick");
+    if (!btn) return;
+    const id = btn.dataset.id, a = byId[id];
+    if (picked.has(id)){
+      picked.delete(id);
+    } else {
+      const g = groupOf(a);
+      ASSETS.forEach(o => { if (groupOf(o) === g && picked.has(o.id)) picked.delete(o.id); });
+      picked.add(id);
+    }
+    $$("#assetList .pick").forEach(b => b.setAttribute("aria-pressed", String(picked.has(b.dataset.id))));
+    refresh();
+  });
+
+  $("#leverOpts").innerHTML = LEVERS.map(l =>
+    '<button type="button" class="opt" data-lever="' + esc(l.id) + '" aria-pressed="false">' +
+      '<span class="ttl">' + esc(l.ttl) + '</span><span class="sub">' + esc(l.sub) + '</span></button>').join("");
+  bindPress($("#leverOpts"));
+
+  $("#leverOpts").addEventListener("click", e => {
+    const b = e.target.closest(".opt");
+    if (!b) return;
+    lever = b.dataset.lever;
+    $$("#leverOpts .opt").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+  });
+
+  $("#start").addEventListener("click", () => { show("build"); refresh(); });
+  $("#toReason").addEventListener("click", () => show("reason"));
+  $("#backToBuild").addEventListener("click", () => show("build"));
+
+  $("#submit").addEventListener("click", () => {
+    if (!lever){ toast("Pick the lever you pulled", true); return; }
+    const just = $("#just").value.trim();
+    if (!just){ toast("One line on what it cost you", true); $("#just").focus(); return; }
+
+    const T = totals();
+    const picks = Array.from(picked);
+    const renderMs = renderMsFromScene(T.draws, T.textureMB);
+
+    setPipe(me.team, {
+      scene: { picks, totals: T, lever, justification: just, renderMs }
+    });
+
+    renderDone(T, picks, just, renderMs);
+    show("done");
+  });
+
+  function renderDone(T, picks, just, renderMs){
+    const leverLbl = (LEVERS.filter(l => l.id === lever)[0] || {}).ttl || lever;
+    let h = '<h1>Scene locked in.</h1><p class="lead">' + fmtInt(T.tris) + ' triangles &middot; ' +
+            T.draws + ' draw calls &middot; ' + T.textureMB + ' MB of texture, hero included.</p>';
+
+    h += '<div class="tablewrap"><table class="dtl"><thead><tr><th>Object</th><th class="num">Tris</th><th class="num">Draws</th><th class="num">MB</th></tr></thead><tbody>';
+    h += '<tr><td class="team">' + esc(pipe.source.caseTitle) + ' <em class="vtag">hero</em></td><td class="num">' + fmtInt(HERO.tris) + '</td><td class="num">' + HERO.materials + '</td><td class="num">' + HERO.textureMB + '</td></tr>';
+    picks.forEach(id => {
+      const a = byId[id];
+      h += '<tr><td class="team">' + esc(a.name) + '</td><td class="num">' + fmtInt(a.tris) + '</td><td class="num">' + a.materials + '</td><td class="num">' + a.textureMB + '</td></tr>';
+    });
+    h += '</tbody><tfoot><tr><td><b>Total</b></td><td class="num"><b>' + fmtInt(T.tris) + '</b></td><td class="num"><b>' + T.draws + '</b></td><td class="num"><b>' + T.textureMB + '</b></td></tr></tfoot></table></div>';
+
+    h += '<div class="callout green"><b>What this costs in stage 3:</b><p>' + T.draws + ' draw calls and ' + T.textureMB +
+      'MB of texture works out to <b>' + renderMs.toFixed(1) + 'ms</b> of rendering cost, every frame, before you spend a single millisecond on grounding, lighting, audio or legibility.</p></div>';
+
+    h += '<div class="btnrow"><a class="btn primary" href="index.html">Stage 3: spend the frame &rarr;</a></div>';
+    $("#doneCard").innerHTML = h;
+  }
+
+  if (!ASSETS.length) toast("Scene data failed to load", true);
+  paintReqs("#reqBrief", false);
+  buildList();
+
+  if (pipe.scene){
+    // already built this stage — show the same "done" summary again
+    // rather than letting a refresh silently re-open editing on a
+    // scene that stage 3 may already be reading from
+    renderDone(pipe.scene.totals, pipe.scene.picks, pipe.scene.justification, pipe.scene.renderMs);
+    show("done");
+  } else {
+    show("brief");
+  }
+})();
+</script>
+</body>
+</html>

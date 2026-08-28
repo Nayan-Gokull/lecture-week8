@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Spend the Frame — INTE 42312</title>
-<meta name="description" content="Budget a realistic AR experience under a 6.7ms frame, then survive the thermal cliff." />
+<title>Ship It — Spend the Frame — INTE 42312</title>
+<meta name="description" content="Stage 3 of 3: budget a realistic AR experience under a real frame budget, rendering cost included, then survive the thermal cliff." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,600&display=swap" rel="stylesheet" />
@@ -22,42 +22,18 @@
       </svg>
     </span>
     <span class="hero-text">
-      <span class="hero-title">Spend the Frame</span>
-      <span class="hero-sub">INTE 42312 &middot; Augmented Reality</span>
+      <span class="hero-title">Ship It</span>
+      <span class="hero-sub">Stage 3 of 3 &middot; Spend the frame</span>
     </span>
   </div>
 
   <main class="main-stage">
 
-    <!-- ============ TEAM SIGN-IN ============ -->
-    <section id="signin">
-      <div class="card narrow">
-        <h1>You have 6.7 milliseconds. Spend them.</h1>
-        <p class="lead">Your team works through this in a breakout room. Everything runs in this browser tab, nothing to install. About 20&ndash;25 minutes, in two rounds.</p>
-
-        <div class="field">
-          <label for="team">Team name or breakout room number</label>
-          <input class="input" id="team" maxlength="60" autocomplete="off" placeholder="e.g. Room 4, or The Normals" />
-        </div>
-
-        <button type="button" class="link-toggle" id="memToggle">+ Add who is in the room</button>
-        <div class="field" id="memField" hidden>
-          <label for="members">Names, separated by commas</label>
-          <input class="input" id="members" maxlength="200" autocomplete="off" placeholder="Ayesha, Ben, Chidi, Dan" />
-        </div>
-
-        <div class="btnrow">
-          <button class="btn primary" id="go">Start &rarr;</button>
-        </div>
-        <p class="fine">One submission per team. Every room gets a different brief, decided by your team name — that is deliberate, do not compare notes with the room next door yet.</p>
-      </div>
-    </section>
-
     <!-- ============ BRIEF ============ -->
     <section id="brief" hidden>
       <div class="teamid">
         <span class="who" id="whoName"></span><span class="mem" id="whoMem"></span>
-        <a class="swap" href="index.html">change team</a>
+        <a class="swap" href="source.html">change team</a>
       </div>
 
       <div class="card">
@@ -65,6 +41,11 @@
         <div class="brief-scenario">
           <span class="tag" id="briefTag"></span>
           <p id="briefText"></p>
+        </div>
+
+        <div class="callout gold">
+          <b>Locked in from stage 2:</b>
+          <p id="renderSummary"></p>
         </div>
 
         <div class="callout gold">
@@ -77,7 +58,7 @@
         <div class="opts row" id="fpsOpts"></div>
         <p class="fine" id="fpsPreview">Pick a target above to see your Round 1 budget.</p>
 
-        <p class="lead">You will pick from five categories: grounding, lighting, audio, legibility and rendering. Spend it the way your specific brief needs, not the way that seems cleverest in the abstract. There is no single right answer &mdash; there is a right answer <em>for your brief.</em></p>
+        <p class="lead">You will pick from four categories: grounding, lighting, audio and legibility. Rendering is already decided &mdash; it is whatever your Scene Build in stage 2 costs. Spend the rest the way your specific brief needs, not the way that seems cleverest in the abstract. There is no single right answer &mdash; there is a right answer <em>for your brief.</em></p>
 
         <div class="btnrow">
           <button class="btn primary" id="startR1" disabled>Start Round 1 &rarr;</button>
@@ -89,7 +70,7 @@
     <section id="round1" hidden>
       <div class="teamid">
         <span class="who" id="whoName2"></span><span class="mem" id="briefTag2"></span>
-        <a class="swap" href="index.html">leave</a>
+        <a class="swap" href="source.html">leave</a>
       </div>
 
       <div class="worksplit">
@@ -218,34 +199,50 @@
 (function(){
   "use strict";
   const { $, $$, esc, toast, show, clamp, bindPress,
-          saveRun, markSubmitted, hasSubmitted, getIdentity, setIdentity } = ML;
+          saveRun, markSubmitted, hasSubmitted, getIdentity, pickBrief, getPipe } = ML;
 
   const ACT = "frame";
   const ENDPOINT = "/api/frame-results";
 
-  let R1_CAP = null;
-  let TARGET_FPS = null;
   const FPS_OPTIONS = window.FRAME_FPS_OPTIONS;
   const capForFps = window.FRAME_CAP_FOR_FPS;
-
-  function round2CapFor(){
-    return Math.round(R1_CAP * BRIEF.throttleRatio * 10) / 10;
-  }
   const CATEGORIES = window.FRAME_CATEGORIES;
-  const OPTIONS    = window.FRAME_OPTIONS;
   const BRIEFS     = window.FRAME_BRIEFS;
+
+  /* ---------- identity + pipeline gating ----------
+     This is stage 3 of 3. There is no sign-in here any more — a team
+     arrives with an identity already set in source.html, and this page
+     refuses to run at all without a completed source.html + scene.html
+     for that same team, since Round 1's rendering cost is derived from
+     what scene.html computed. */
+  const params = new URLSearchParams(location.search);
+  const DEMO = params.get("demo") === "1";
+
+  const me = getIdentity();
+  if (!me){ location.replace("source.html"); return; }
+
+  const pipe = getPipe(me.team);
+  if (!pipe.source){ location.replace("source.html"); return; }
+  if (!pipe.scene){ location.replace("scene.html"); return; }
+
+  const RENDER_MS = pipe.scene.renderMs;
+  const SCENE_TOTALS = pipe.scene.totals;
+
+  /* Rendering & assets is a single locked pick, not a free choice — see
+     the comment above FRAME_RENDER_MS_FROM_SCENE in data/frame-data.js.
+     Folding it into the same OPTIONS array as everything else keeps
+     totalMs / catState / paintStack unchanged; only renderCatList and
+     the two click handlers need to know it cannot be toggled. */
+  const OPTIONS = window.FRAME_OPTIONS.concat([{
+    id: "r_derived", category: "render", label: "Rendering & assets",
+    note: "From your Scene Build: " + SCENE_TOTALS.draws + " draw calls, " + SCENE_TOTALS.textureMB + "MB of texture, hero asset included.",
+    ms: RENDER_MS, locked: true,
+  }]);
 
   const byId = {};
   OPTIONS.forEach(o => { byId[o.id] = o; });
   const catMap = {};
   CATEGORIES.forEach(c => { catMap[c.id] = c; });
-
-  /* ---------- identity ---------- */
-  const params = new URLSearchParams(location.search);
-  if (params.get("demo") === "1" && !getIdentity()) setIdentity("Demo Room 3", "rehearsal");
-  const DEMO = params.get("demo") === "1";
-
-  let me = getIdentity();  // reassigned the moment sign-in succeeds — see #go handler
 
   function paintWho(){
     ["whoName","whoName2","whoName3","whoName4","whoName5"].forEach(id => {
@@ -254,23 +251,16 @@
     $("#whoMem").textContent = me.members ? "· " + me.members : "";
   }
 
-  /* ---------- brief assignment ----------
-     Deterministic hash of the team name, same technique as the other
-     Model Lab activities. Not security-relevant, so no server copy
-     is needed — the server trusts whatever brief id the client sends
-     and only recomputes the things that gate validity: totals, and
-     category coverage. */
-  function pickBrief(team){
-    let h = 0;
-    const s = team.toLowerCase();
-    for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
-    return BRIEFS[h % BRIEFS.length];
-  }
-
+  let R1_CAP = null;
+  let TARGET_FPS = null;
   let BRIEF = null;
 
+  function round2CapFor(){
+    return Math.round(R1_CAP * BRIEF.throttleRatio * 10) / 10;
+  }
+
   /* ---------- state ---------- */
-  let r1picks = new Set();
+  let r1picks = new Set(["r_derived"]);
   let r2picks = new Set();
   let plan = null;
 
@@ -301,6 +291,18 @@
     let h = "";
     CATEGORIES.forEach(cat => {
       const opts = OPTIONS.filter(o => o.category === cat.id);
+
+      if (cat.locked){
+        const o = opts[0];
+        h += '<h4 class="catname">' + esc(cat.label) + ' <span class="req">(from your Scene Build)</span></h4><div class="picklist">';
+        h += '<button type="button" class="pick is-locked" data-id="' + esc(o.id) + '" aria-pressed="true" disabled>' +
+          '<span class="box"><svg viewBox="0 0 24 24"><path d="M4 12.5 9.5 18 20 6.5"/></svg></span>' +
+          '<span class="nm">' + esc(o.label) + ' <em class="vtag">locked</em><span class="sub">' + esc(o.note) + '</span></span>' +
+          '<span class="fig"><b>' + o.ms.toFixed(1) + ' ms</b></span>' +
+        '</button></div>';
+        return;
+      }
+
       const reqTxt = cat.min === 0 ? "optional" :
                      (cat.min === cat.max ? "pick exactly " + cat.min : "pick " + cat.min + "&ndash;" + cat.max);
       h += '<h4 class="catname">' + esc(cat.label) + ' <span class="req">(' + reqTxt + ')</span></h4><div class="picklist">';
@@ -388,7 +390,7 @@
 
   $("#catList1").addEventListener("click", e => {
     const b = e.target.closest(".pick");
-    if (!b) return;
+    if (!b || b.disabled || (byId[b.dataset.id] && byId[b.dataset.id].locked)) return;
     const id = b.dataset.id;
     if (r1picks.has(id)) r1picks.delete(id); else r1picks.add(id);
     refreshR1();
@@ -418,7 +420,7 @@
 
   $("#catList2").addEventListener("click", e => {
     const b = e.target.closest(".pick");
-    if (!b) return;
+    if (!b || b.disabled || (byId[b.dataset.id] && byId[b.dataset.id].locked)) return;
     const id = b.dataset.id;
     if (r2picks.has(id)) r2picks.delete(id); else r2picks.add(id);
     refreshR2();
@@ -433,18 +435,6 @@
   });
 
   /* ================= SCREEN FLOW ================= */
-
-  $("#memToggle").addEventListener("click", () => {
-    const f = $("#memField"); f.hidden = !f.hidden; if (!f.hidden) $("#members").focus();
-  });
-
-  $("#go").addEventListener("click", () => {
-    const team = $("#team").value.trim();
-    if (!team){ toast("Give your team a name first", true); $("#team").focus(); return; }
-    me = setIdentity(team, $("#members").value);   // update the live reference, not just storage
-    boot();
-  });
-  $("#team").addEventListener("keydown", e => { if (e.key === "Enter") $("#go").click(); });
 
   $("#startR1").addEventListener("click", () => { refreshR1(); show("round1"); });
 
@@ -464,6 +454,8 @@
     const addedList = [...r2picks].filter(id => !r1picks.has(id));
     const payload = {
       team: me.team, members: me.members, brief: BRIEF.id, targetFps: TARGET_FPS,
+      source: pipe.source,
+      scene: pipe.scene,
       round1: { picks: [...r1picks], justification: $("#just1").value.trim() },
       round2: { picks: [...r2picks], plannedAhead: plan, note: $("#note2").value.trim(),
                 cutList, addedList },
@@ -556,9 +548,8 @@
   });
 
   function boot(){
-    if (!me){ show("signin"); return; }
     paintWho();
-    BRIEF = pickBrief(me.team);
+    BRIEF = pickBrief(me.team, BRIEFS);
     TARGET_FPS = null;
     R1_CAP = null;
     $("#briefTag").textContent = BRIEF.title;
@@ -569,17 +560,17 @@
     $("#recapTextR1").textContent = BRIEF.scenario;
     $("#recapTagR2").textContent = "Your brief: " + BRIEF.title;
     $("#recapTextR2").textContent = BRIEF.scenario;
+    $("#renderSummary").textContent = pipe.source.caseTitle + " (" + pipe.source.licence + ") plus " +
+      pipe.scene.picks.length + " scene prop" + (pipe.scene.picks.length === 1 ? "" : "s") + " comes to " +
+      SCENE_TOTALS.draws + " draw calls and " + SCENE_TOTALS.textureMB + "MB — that is " +
+      RENDER_MS.toFixed(1) + "ms of rendering cost, every frame, before you spend anything below.";
     renderFpsOpts();
     $("#fpsPreview").textContent = "Pick a target above to see your Round 1 budget.";
     $("#startR1").disabled = true;
     show("brief");
   }
 
-  if (me) boot(); else show("signin");
-
-
-
-
+  boot();
 
 })();
 </script>

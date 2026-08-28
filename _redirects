@@ -6,9 +6,9 @@
 #
 # Format: /source /destination [status]
 
-/README.md      /   302
-/README         /   302
-/TEACHING.md    /   302
-/TEACHING       /   302
-/data/          /   302
-/panels/        /   302
+/README.md      /source.html   302
+/README         /source.html   302
+/TEACHING.md    /source.html   302
+/TEACHING       /source.html   302
+/data/          /source.html   302
+/panels/        /source.html   302

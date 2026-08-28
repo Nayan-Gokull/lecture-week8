@@ -336,3 +336,113 @@ p.bad{ color:var(--bad); font-weight:700; }
    than alone on its own screen. */
 .brief-recap{ margin:0 0 12px; padding:10px 14px; font-size:13px; line-height:1.45; }
 .brief-recap .tag{ margin-bottom:3px; }
+
+/* ============================================================
+   Stages 1 & 2 (source.html, scene.html) — ported verbatim from the
+   Model Lab's lab.css: "Can I Ship This?" listing cards and reveal
+   panel, and the Budget Table's requirements checklist. Same
+   selectors, same values, so all three sites stay visually identical.
+   ============================================================ */
+
+/* ---------- reveal panel ---------- */
+.answer{
+  margin-top:12px; border:var(--border-w) solid var(--forest-900);
+  border-radius:var(--radius-sm); background:var(--emerald-50);
+  box-shadow:var(--shadow-1); overflow:hidden;
+}
+.answer > h4{
+  margin:0; padding:7px 12px; background:var(--forest-900); color:#fff;
+  font-size:11px; font-weight:800; letter-spacing:.11em; text-transform:uppercase;
+}
+.answer .body{ padding:11px 13px; font-size:13.5px; line-height:1.55; }
+.answer .body p{ margin:.5em 0 0; }
+.answer .body p:first-child{ margin-top:0; }
+.answer .body b{ font-weight:800; }
+.answer .trap{
+  margin-top:9px; padding-top:9px; border-top:2px dashed var(--line-2);
+  font-size:13px;
+}
+.answer .trap b{ color:var(--gold); text-transform:uppercase; letter-spacing:.07em; font-size:11px; }
+
+/* ---------- asset listing card (Source the Asset) ---------- */
+.listing .lhead{
+  display:flex; align-items:flex-start; justify-content:space-between; gap:10px; flex-wrap:wrap;
+}
+.listing .lhead h2{ margin:0; font-size:20px; line-height:1.2; flex:1 1 220px; min-width:0; }
+.listing .lhead .badge{ flex:0 0 auto; margin-top:3px;
+  background:var(--forest-900); color:#fff; border-color:var(--forest-900); }
+.listing .lauthor{ margin:.35em 0 .1em; font-size:14px; color:var(--ink-2); }
+.listing .lauthor b{ font-weight:800; }
+.listing .ldetails{
+  list-style:none; margin:11px 0; padding:0;
+  display:flex; flex-wrap:wrap; gap:6px;
+}
+.listing .ldetails li{
+  font-size:11.5px; font-weight:700; padding:3px 9px;
+  background:var(--cream-2); border:1px solid var(--line-2);
+  border-radius:100px; color:var(--ink-2); white-space:nowrap;
+}
+.listing .lsmall{
+  margin:11px 0 0; padding:10px 12px;
+  background:var(--surface-2); border:var(--border-w) solid var(--line-2);
+  border-left-width:7px; border-left-color:var(--gold);
+  border-radius:var(--radius-xs);
+  font-size:13px; line-height:1.5; font-style:italic; color:var(--ink-2);
+}
+
+/* attribution comparison inside a reveal */
+.attrcmp{
+  margin:.5em 0 0; padding:7px 10px; font-size:12.5px; line-height:1.45;
+  background:var(--surface); border:2px solid var(--line-2); border-radius:var(--radius-xs);
+}
+.attrcmp.model{ background:var(--emerald-50); border-color:var(--emerald-700); }
+.attrcmp .lbl{
+  display:block; font-size:10px; font-weight:800; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--muted); margin-bottom:3px;
+}
+
+/* ---------- requirements checklist (Build the Scene) ---------- */
+.reqlist{ list-style:none; margin:10px 0 0; padding:0; }
+.reqlist li{
+  font-size:13.5px; padding:3px 0 3px 20px; position:relative; color:var(--ink-2);
+}
+.reqlist li::before{
+  content:""; position:absolute; left:4px; top:11px;
+  width:6px; height:6px; border-radius:50%; background:var(--line-2);
+}
+.reqlist.live li{ padding-left:24px; }
+.reqlist.live li::before{ display:none; }
+.reqlist.live .tick{
+  position:absolute; left:0; top:2px; width:17px; height:17px;
+  display:grid; place-items:center; font-size:11px; font-weight:900;
+  border:2px solid var(--line-2); border-radius:var(--radius-xs);
+  background:var(--surface); color:transparent;
+}
+.reqlist.live li.met .tick{ background:var(--emerald-700); border-color:var(--emerald-700); color:#fff; }
+.reqlist.live li.met{ color:var(--ink); }
+.reqlist.live li.unmet{ color:var(--muted); }
+.reqlist.live li b{ font-weight:800; }
+
+/* the hero asset's locked-in line, and the locked rendering pick on
+   stage 3 — same idea, visually inert rather than a real toggle */
+.pick.is-locked{ cursor:default; background:var(--cream-2); }
+.pick.is-locked:hover{ background:var(--cream-2); }
+.pick.is-locked .box{ background:var(--forest-700); border-color:var(--forest-700); }
+.pick.is-locked .box svg{ opacity:1; }
+
+/* scene.html's own working layout: meters, then the prop catalogue,
+   then the submit card — same shape as the Model Lab's Budget Table */
+@media (min-width:1100px){
+  .scenebuild{
+    grid-template-columns:minmax(0,380px) minmax(0,1fr);
+    grid-template-rows:max-content 1fr;
+    align-items:start;
+  }
+  .scenebuild > .meters     { grid-column:1; grid-row:1; }
+  .scenebuild > .assets     { grid-column:2; grid-row:1 / span 2; margin-top:0; }
+  .scenebuild > .submitcard { grid-column:1; grid-row:2; align-self:start; }
+  .scenebuild .assets .picklist{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+}
+@media (min-width:1500px){
+  .scenebuild .assets .picklist{ grid-template-columns:repeat(3,1fr); }
+}

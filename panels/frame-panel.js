@@ -58,6 +58,32 @@
         ' across all rooms. Ask whether that is because it was genuinely least important for most briefs, or because it was simply the most expensive line on the sheet &mdash; those are different failures.</p></div>';
     }
 
+    /* ---- stage 1: hero asset sourcing ----
+       clean/commission are always safe; cheap is the arguable NC/ND
+       case, priced lowest for a reason. A team that picked cheap and
+       could not defend the verdict shipped a licence condition it
+       skipped entirely — worth naming, same as the risky-pick flag. */
+    var HERO_LABEL = { clean: "Clean stock (safe, heavier)", cheap: "Cheap & optimised (licence-risky)", commission: "Commissioned / original (safe, mid-cost)" };
+    var heroCounts = { clean: 0, cheap: 0, commission: 0 };
+    runs.forEach(function (r) { if (r.source && heroCounts[r.source.pick] !== undefined) heroCounts[r.source.pick]++; });
+    html += '<div class="card"><div class="hd"><h2>Hero asset sourced</h2></div><div class="casedist">';
+    ["clean", "cheap", "commission"].forEach(function (k) {
+      var n = heroCounts[k], w = total ? (n / total) * 100 : 0;
+      html += '<div class="distrow"><span class="dl">' + esc(HERO_LABEL[k]) + '</span>' +
+        '<span class="dbar"><i class="ok" style="width:' + w.toFixed(1) + '%"></i></span>' +
+        '<span class="dn">' + n + '</span></div>';
+    });
+    html += '</div></div>';
+
+    var indefensibleCheap = runs.filter(function (r) {
+      return r.source && r.source.pick === "cheap" && r.source.outcome === "hard-to-defend";
+    }).map(function (r) { return r.team; });
+    if (indefensibleCheap.length) {
+      html += '<div class="callout red"><b>' + indefensibleCheap.length + ' room' + (indefensibleCheap.length === 1 ? "" : "s") +
+        ' took the cheap, licence-risky hero asset without a defensible attribution.</b>' +
+        '<p>' + esc(indefensibleCheap.join(", ")) + '. The whole reason that listing is the cheapest of the three is that someone else already did the optimisation work &mdash; skipping the licence condition on it is the same as having no licence at all.</p></div>';
+    }
+
     /* ---- risky picks still standing in the final answer ---- */
     var riskyFlags = [];
     runs.forEach(function (r) {
@@ -112,6 +138,18 @@
         '<p>' + esc(coastedOn30.join(", ")) + '. That is a defensible choice, but ask them to justify it out loud: a kids game or a walking wayfinding overlay is exactly where a lurching frame rate is most noticeable. If they cannot defend it, that is the finding.</p></div>';
     }
 
+    /* ---- stage 2: what the scene costs before anything else is spent ----
+       renderMs is a forced spend now, not a picklist choice — it is
+       worth showing what share of each room's own Round 1 cap it ate
+       before they touched grounding, lighting, audio or legibility. */
+    var withScene = runs.filter(function (r) { return r.scene && r.round1 && r.round1.cap; });
+    if (withScene.length) {
+      var avgRenderMs = withScene.reduce(function (s, r) { return s + r.scene.renderMs; }, 0) / withScene.length;
+      var avgSharePct = withScene.reduce(function (s, r) { return s + (r.scene.renderMs / r.round1.cap) * 100; }, 0) / withScene.length;
+      html += '<div class="callout"><b>Average rendering cost from Scene Build: ' + avgRenderMs.toFixed(2) + 'ms.</b>' +
+        '<p>Across the rooms that submitted, that ate roughly <b>' + Math.round(avgSharePct) + '%</b> of their own Round 1 budget before a single grounding, lighting, audio or legibility pick.</p></div>';
+    }
+
     /* ---- per-brief breakdown ---- */
     var byBrief = {};
     runs.forEach(function (r) {
@@ -161,13 +199,17 @@
 
     /* ---- per-team table ---- */
     html += '<div class="card"><div class="hd"><h2>Teams</h2></div><div class="tablewrap">' +
-      '<table class="dtl"><thead><tr><th>Team</th><th>Brief</th><th class="num">fps</th><th class="num">R1</th><th class="num">R2 cap</th>' +
+      '<table class="dtl"><thead><tr><th>Team</th><th>Brief</th><th>Hero</th><th class="num">Render</th><th class="num">fps</th><th class="num">R1</th><th class="num">R2 cap</th>' +
       '<th class="num">R2</th><th>Status</th><th>Cut</th><th>Planned ahead?</th><th>Note</th><th>When</th></tr></thead><tbody>';
 
     runs.forEach(function (r) {
       var cutTxt = (r.cutList || []).map(optLabel).join(", ") || "&mdash;";
+      var heroTxt = (r.source && HERO_LABEL[r.source.pick]) || "?";
+      var renderTxt = r.scene ? r.scene.renderMs.toFixed(1) : "?";
       html += '<tr><td class="team">' + esc(r.team) + '</td>' +
         '<td>' + esc(briefTitle(r.brief)) + '</td>' +
+        '<td>' + esc(heroTxt) + '</td>' +
+        '<td class="num">' + renderTxt + '</td>' +
         '<td class="num">' + (r.targetFps || "?") + '</td>' +
         '<td class="num' + (r.round1.overBudget ? " over" : "") + '">' + r.round1.ms.toFixed(1) + '</td>' +
         '<td class="num">' + r.round2.cap.toFixed(1) + '</td>' +
@@ -179,19 +221,27 @@
         '<td>' + esc(ML.stamp(r.ts)) + '</td></tr>';
     });
     html += '</tbody></table></div>' +
-      '<p class="fine">Round 1 cap is fixed at 6.7 ms for every room. Round 2 cap varies by brief &mdash; see the table above.</p></div>';
+      '<p class="fine">Round 1 cap depends on the fps each room chose (1000/fps minus ~10ms overhead). Round 2 cap depends on both that and the brief’s throttle ratio &mdash; see the table above.</p></div>';
 
     mount.innerHTML = html;
   }
 
+  var HERO_LICENCE = { clean: "CC0", cheap: "CC BY-NC 4.0", commission: "Original work" };
+
   function csv(runs) {
     var maps = labelMaps();
-    var rows = [["team", "members", "when", "brief", "target_fps", "round1_cap", "round1_ms", "round1_valid",
+    var rows = [["team", "members", "when", "brief",
+                 "hero_pick", "hero_licence", "hero_verdict_outcome", "hero_attribution",
+                 "scene_tris", "scene_draws", "scene_texture_mb", "render_ms",
+                 "target_fps", "round1_cap", "round1_ms", "round1_valid",
                  "round2_cap", "round2_ms", "round2_valid", "future_proofed",
                  "cut", "added", "planned_ahead", "note", "round1_justification"]];
     runs.forEach(function (r) {
+      var s = r.source || {}, sc = r.scene || {}, t = sc.totals || {};
       rows.push([
         r.team, r.members || "", ML.stamp(r.ts), (maps.briefs[r.brief] && maps.briefs[r.brief].title) || r.brief,
+        s.pick || "", HERO_LICENCE[s.pick] || "", s.outcome || "", s.attribution || "",
+        t.tris || "", t.draws || "", t.textureMB || "", sc.renderMs != null ? sc.renderMs : "",
         r.targetFps || "", r.round1.cap, r.round1.ms, r.round1.valid ? "yes" : "no",
         r.round2.cap, r.round2.ms, r.round2.valid ? "yes" : "no",
         r.futureProofed ? "yes" : "no",
