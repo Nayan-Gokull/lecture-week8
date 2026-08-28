@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Spend the Frame — INTE 42312</title>
+<meta name="description" content="Budget a realistic AR experience under a 6.7ms frame, then survive the thermal cliff." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+<link rel="stylesheet" href="lab.css" />
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero-banner">
+    <span class="hero-mark">
+      <svg viewBox="0 0 24 24" fill="none">
+        <path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/>
+        <circle cx="12" cy="12" r="3.4" stroke="currentColor" stroke-width="2.1"/>
+      </svg>
+    </span>
+    <span class="hero-text">
+      <span class="hero-title">Spend the Frame</span>
+      <span class="hero-sub">INTE 42312 &middot; Augmented Reality</span>
+    </span>
+  </div>
+
+  <main class="main-stage">
+
+    <!-- ============ TEAM SIGN-IN ============ -->
+    <section id="signin">
+      <div class="card narrow">
+        <h1>You have 6.7 milliseconds. Spend them.</h1>
+        <p class="lead">Your team works through this in a breakout room. Everything runs in this browser tab, nothing to install. About 20&ndash;25 minutes, in two rounds.</p>
+
+        <div class="field">
+          <label for="team">Team name or breakout room number</label>
+          <input class="input" id="team" maxlength="60" autocomplete="off" placeholder="e.g. Room 4, or The Normals" />
+        </div>
+
+        <button type="button" class="link-toggle" id="memToggle">+ Add who is in the room</button>
+        <div class="field" id="memField" hidden>
+          <label for="members">Names, separated by commas</label>
+          <input class="input" id="members" maxlength="200" autocomplete="off" placeholder="Ayesha, Ben, Chidi, Dan" />
+        </div>
+
+        <div class="btnrow">
+          <button class="btn primary" id="go">Start &rarr;</button>
+        </div>
+        <p class="fine">One submission per team. Every room gets a different brief, decided by your team name — that is deliberate, do not compare notes with the room next door yet.</p>
+      </div>
+    </section>
+
+    <!-- ============ BRIEF ============ -->
+    <section id="brief" hidden>
+      <div class="teamid">
+        <span class="who" id="whoName"></span><span class="mem" id="whoMem"></span>
+        <a class="swap" href="index.html">change team</a>
+      </div>
+
+      <div class="card">
+        <h1>Your brief</h1>
+        <div class="brief-scenario">
+          <span class="tag" id="briefTag"></span>
+          <p id="briefText"></p>
+        </div>
+
+        <div class="callout gold">
+          <b>The rule for this exercise.</b>
+          <p>One frame at 60fps is 16.7 milliseconds. Camera capture, VIO and image tracking spend roughly 10ms of that before your own code runs. <strong>You are budgeting what is left: 6.7ms.</strong> Every realism feature you add has a cost, and you cannot go over.</p>
+        </div>
+
+        <p class="lead">You will pick from five categories: grounding, lighting, audio, legibility and rendering. Spend it the way your specific brief needs, not the way that seems cleverest in the abstract. There is no single right answer &mdash; there is a right answer <em>for your brief.</em></p>
+
+        <div class="btnrow">
+          <button class="btn primary" id="startR1">Start Round 1 &rarr;</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ ROUND 1 ============ -->
+    <section id="round1" hidden>
+      <div class="teamid">
+        <span class="who" id="whoName2"></span><span class="mem" id="briefTag2"></span>
+        <a class="swap" href="index.html">leave</a>
+      </div>
+
+      <div class="card meters">
+        <div class="meter-row">
+          <div class="meter-head"><span class="name">Frame budget &mdash; Round 1</span><span class="val" id="vMs1">0.0 / 6.7 ms</span></div>
+          <div class="meter"><div class="meter-fill" id="fMs1"></div></div>
+        </div>
+        <p class="fine" id="hint1">Pick at least one option in every mandatory category. &ldquo;Nothing&rdquo; counts as a pick &mdash; it is a real decision, not a way to dodge the category.</p>
+      </div>
+
+      <div class="card" id="catList1"></div>
+
+      <div class="card">
+        <div class="field">
+          <label for="just1">In one line: why did you spend where you spent?</label>
+          <textarea class="input" id="just1" rows="2" maxlength="240" placeholder="e.g. we paid for ML depth occlusion because visitors get close enough to notice it float"></textarea>
+        </div>
+        <div class="btnrow">
+          <button class="btn primary" id="lockR1" disabled>Lock in Round 1 &rarr;</button>
+        </div>
+        <p class="fine" id="block1">Fill every mandatory category first.</p>
+      </div>
+    </section>
+
+    <!-- ============ THROTTLE ============ -->
+    <section id="throttle" hidden>
+      <div class="teamid"><span class="who" id="whoName3"></span></div>
+      <div class="card">
+        <h1>Five minutes in.</h1>
+        <div class="throttle-card">
+          <p class="big" id="throttleLine"></p>
+          <div class="capdrop"><span class="was" id="capWas"></span><span class="now" id="capNow"></span></div>
+          <p class="line">Your budget for the rest of this session just shrank. Your Round 1 picks are still there &mdash; you can keep, swap or drop anything, as long as the new total fits.</p>
+        </div>
+        <div class="btnrow">
+          <button class="btn primary" id="startR2">Renegotiate the budget &rarr;</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ ROUND 2 ============ -->
+    <section id="round2" hidden>
+      <div class="teamid">
+        <span class="who" id="whoName4"></span><span class="mem" id="briefTag4"></span>
+      </div>
+
+      <div class="card meters">
+        <div class="meter-row">
+          <div class="meter-head"><span class="name">Frame budget &mdash; Round 2 (throttled)</span><span class="val" id="vMs2">0.0 / 0.0 ms</span></div>
+          <div class="meter"><div class="meter-fill" id="fMs2"></div></div>
+        </div>
+        <p class="fine">Items you had in Round 1 are marked <b>cut</b> if you remove them, and anything new is marked <b>added</b>.</p>
+      </div>
+
+      <div class="card" id="catList2"></div>
+
+      <div class="card">
+        <p class="lead"><b>Could you have designed for this from the start?</b></p>
+        <div class="opts row" id="planOpts">
+          <button type="button" class="opt" data-v="yes" aria-pressed="false"><span class="ttl">Yes</span><span class="sub">We would have picked differently in Round 1 if we had known</span></button>
+          <button type="button" class="opt" data-v="no" aria-pressed="false"><span class="ttl">No</span><span class="sub">This genuinely was not predictable from the brief</span></button>
+        </div>
+        <div class="field">
+          <label for="note2">In one line: what did you cut, and why that and not something else?</label>
+          <textarea class="input" id="note2" rows="2" maxlength="240" placeholder="e.g. we dropped the long reverb first, it was the single most expensive line and nobody would miss it"></textarea>
+        </div>
+        <div class="btnrow">
+          <button class="btn primary" id="submit" disabled>Lock in final answer &rarr;</button>
+        </div>
+        <p class="fine" id="block2">Fit under the new budget, and tell us which way you would have planned ahead.</p>
+      </div>
+    </section>
+
+    <!-- ============ DONE ============ -->
+    <section id="done" hidden>
+      <div class="teamid"><span class="who" id="whoName5"></span></div>
+      <div class="card" id="doneCard"></div>
+    </section>
+
+  </main>
+</div>
+
+<script src="common.js"></script>
+<script src="data/frame-data.js"></script>
+<script>
+(function(){
+  "use strict";
+  const { $, $$, esc, toast, show, clamp, bindPress,
+          saveRun, markSubmitted, hasSubmitted, getIdentity, setIdentity } = ML;
+
+  const ACT = "frame";
+  const ENDPOINT = "/api/frame-results";
+
+  const R1_CAP    = window.FRAME_ROUND1_CAP;
+  const CATEGORIES = window.FRAME_CATEGORIES;
+  const OPTIONS    = window.FRAME_OPTIONS;
+  const BRIEFS     = window.FRAME_BRIEFS;
+
+  const byId = {};
+  OPTIONS.forEach(o => { byId[o.id] = o; });
+  const catMap = {};
+  CATEGORIES.forEach(c => { catMap[c.id] = c; });
+
+  /* ---------- identity ---------- */
+  const params = new URLSearchParams(location.search);
+  if (params.get("demo") === "1" && !getIdentity()) setIdentity("Demo Room 3", "rehearsal");
+  const DEMO = params.get("demo") === "1";
+
+  const me = getIdentity();
+
+  function paintWho(){
+    ["whoName","whoName2","whoName3","whoName4","whoName5"].forEach(id => {
+      const el = $("#" + id); if (el) el.textContent = me.team;
+    });
+    $("#whoMem").textContent = me.members ? "· " + me.members : "";
+  }
+
+  /* ---------- brief assignment ----------
+     Deterministic hash of the team name, same technique as the other
+     Model Lab activities. Not security-relevant, so no server copy
+     is needed — the server trusts whatever brief id the client sends
+     and only recomputes the things that gate validity: totals, and
+     category coverage. */
+  function pickBrief(team){
+    let h = 0;
+    const s = team.toLowerCase();
+    for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
+    return BRIEFS[h % BRIEFS.length];
+  }
+
+  let BRIEF = null;
+
+  /* ---------- state ---------- */
+  let r1picks = new Set();
+  let r2picks = new Set();
+  let plan = null;
+
+  function totalMs(picks){
+    let t = 0;
+    picks.forEach(id => { const o = byId[id]; if (o) t += o.ms; });
+    return Math.round(t * 10) / 10;
+  }
+
+  function catCounts(picks){
+    const counts = {};
+    picks.forEach(id => { const o = byId[id]; if (o) counts[o.category] = (counts[o.category] || 0) + 1; });
+    return counts;
+  }
+
+  function catState(picks){
+    const counts = catCounts(picks);
+    return CATEGORIES.map(c => {
+      const n = counts[c.id] || 0;
+      return { cat: c, n, met: n >= c.min && n <= c.max };
+    });
+  }
+
+  /* ---------- rendering the picklist ----------
+     round = 1 or 2. onToggle receives the option id. */
+  function renderCatList(mountSel, picks, cap, round){
+    const mount = $(mountSel);
+    let h = "";
+    CATEGORIES.forEach(cat => {
+      const opts = OPTIONS.filter(o => o.category === cat.id);
+      const reqTxt = cat.min === 0 ? "optional" :
+                     (cat.min === cat.max ? "pick exactly " + cat.min : "pick " + cat.min + "&ndash;" + cat.max);
+      h += '<h4 class="catname">' + esc(cat.label) + ' <span class="req">(' + reqTxt + ')</span></h4><div class="picklist">';
+      opts.forEach(o => {
+        const picked = picks.has(o.id);
+        const wouldTotal = totalMs(new Set([...picks].filter(x => x !== o.id).concat(picked ? [] : [o.id])));
+        const disabled = !picked && wouldTotal > cap + 1e-9;
+        let tags = "";
+        if (o.risky)      tags += ' <em class="vtag risky">risk</em>';
+        if (o.deviceGate) tags += ' <em class="vtag gate">pro/max only</em>';
+        if (o.headsetOnly)tags += ' <em class="vtag headset">headset only</em>';
+        let diffClass = "";
+        if (round === 2){
+          if (r1picks.has(o.id)) diffClass += " was-picked-r1";
+          if (!r1picks.has(o.id)) diffClass += " new-in-r2";
+        }
+        h += '<button type="button" class="pick' + diffClass + (disabled ? " disabled" : "") +
+             '" data-id="' + esc(o.id) + '" aria-pressed="' + picked + '">' +
+          '<span class="box"><svg viewBox="0 0 24 24"><path d="M4 12.5 9.5 18 20 6.5"/></svg></span>' +
+          '<span class="nm">' + esc(o.label) + tags + '<span class="sub">' + esc(o.note) + '</span></span>' +
+          '<span class="fig"><b>' + (o.ms === 0 ? "free" : o.ms.toFixed(1) + " ms") + '</b></span>' +
+        '</button>';
+      });
+      h += '</div>';
+    });
+    mount.innerHTML = h;
+    bindPress(mount);
+  }
+
+  /* ================= ROUND 1 ================= */
+
+  function refreshR1(){
+    const t = totalMs(r1picks);
+    $("#vMs1").textContent = t.toFixed(1) + " / " + R1_CAP.toFixed(1) + " ms";
+    $("#vMs1").classList.toggle("over", t > R1_CAP);
+    const fill = $("#fMs1");
+    fill.style.width = clamp((t / R1_CAP) * 100, 0, 100).toFixed(1) + "%";
+    fill.className = "meter-fill" + (t > R1_CAP ? " over" : (t / R1_CAP >= 0.85 ? " warn" : ""));
+
+    renderCatList("#catList1", r1picks, R1_CAP, 1);
+
+    const st = catState(r1picks);
+    const bad = st.filter(s => !s.met);
+    const ok = !bad.length && t <= R1_CAP;
+    $("#lockR1").disabled = !ok;
+    $("#block1").textContent = ok
+      ? "Everything fits. You can keep tuning, or lock it in."
+      : bad.length
+        ? "Still needs a pick in: " + bad.map(s => s.cat.label).join(", ") + "."
+        : "Over budget — remove something before you can lock in.";
+    $("#block1").className = "fine" + (ok ? " okmsg" : "");
+  }
+
+  $("#catList1").addEventListener("click", e => {
+    const b = e.target.closest(".pick");
+    if (!b || b.classList.contains("disabled")) return;
+    const id = b.dataset.id;
+    if (r1picks.has(id)) r1picks.delete(id); else r1picks.add(id);
+    refreshR1();
+  });
+
+  /* ================= ROUND 2 ================= */
+
+  function refreshR2(){
+    const cap = BRIEF.round2Cap;
+    const t = totalMs(r2picks);
+    $("#vMs2").textContent = t.toFixed(1) + " / " + cap.toFixed(1) + " ms";
+    $("#vMs2").classList.toggle("over", t > cap);
+    const fill = $("#fMs2");
+    fill.style.width = clamp((t / cap) * 100, 0, 100).toFixed(1) + "%";
+    fill.className = "meter-fill" + (t > cap ? " over" : (t / cap >= 0.85 ? " warn" : ""));
+
+    renderCatList("#catList2", r2picks, cap, 2);
+
+    const st = catState(r2picks);
+    const bad = st.filter(s => !s.met);
+    const ok = !bad.length && t <= cap && plan;
+    $("#submit").disabled = !ok;
+    $("#block2").textContent = !plan
+      ? "Answer the planning question above."
+      : ok
+        ? "Fits. Lock it in when you are ready."
+        : bad.length
+          ? "Still needs a pick in: " + bad.map(s => s.cat.label).join(", ") + "."
+          : "Over the throttled budget — cut something else.";
+    $("#block2").className = "fine" + (ok && !bad.length && t <= cap ? " okmsg" : "");
+  }
+
+  $("#catList2").addEventListener("click", e => {
+    const b = e.target.closest(".pick");
+    if (!b || b.classList.contains("disabled")) return;
+    const id = b.dataset.id;
+    if (r2picks.has(id)) r2picks.delete(id); else r2picks.add(id);
+    refreshR2();
+  });
+
+  $("#planOpts").addEventListener("click", e => {
+    const b = e.target.closest(".opt");
+    if (!b) return;
+    plan = b.dataset.v;
+    $$("#planOpts .opt").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+    refreshR2();
+  });
+
+  /* ================= SCREEN FLOW ================= */
+
+  $("#memToggle").addEventListener("click", () => {
+    const f = $("#memField"); f.hidden = !f.hidden; if (!f.hidden) $("#members").focus();
+  });
+
+  $("#go").addEventListener("click", () => {
+    const team = $("#team").value.trim();
+    if (!team){ toast("Give your team a name first", true); $("#team").focus(); return; }
+    setIdentity(team, $("#members").value);
+    boot();
+  });
+  $("#team").addEventListener("keydown", e => { if (e.key === "Enter") $("#go").click(); });
+
+  $("#startR1").addEventListener("click", () => { refreshR1(); show("round1"); });
+
+  $("#lockR1").addEventListener("click", () => {
+    r2picks = new Set(r1picks); // renegotiation starts from what you already had
+    $("#throttleLine").textContent = BRIEF.throttleLine;
+    $("#capWas").textContent = R1_CAP.toFixed(1) + " ms";
+    $("#capNow").textContent = BRIEF.round2Cap.toFixed(1) + " ms";
+    show("throttle");
+  });
+
+  $("#startR2").addEventListener("click", () => { refreshR2(); show("round2"); });
+
+  $("#submit").addEventListener("click", async () => {
+    $("#submit").disabled = true;
+    const cutList   = [...r1picks].filter(id => !r2picks.has(id));
+    const addedList = [...r2picks].filter(id => !r1picks.has(id));
+    const payload = {
+      team: me.team, members: me.members, brief: BRIEF.id,
+      round1: { picks: [...r1picks], justification: $("#just1").value.trim() },
+      round2: { picks: [...r2picks], plannedAhead: plan, note: $("#note2").value.trim(),
+                cutList, addedList },
+      ua: navigator.userAgent, ts: Date.now(),
+    };
+
+    let sentOk = false, savedId = "";
+    if (!DEMO){
+      try {
+        const res = await saveRun(ENDPOINT, payload);
+        markSubmitted(ACT, res.id); savedId = res.id; sentOk = true;
+      } catch (err) {
+        sentOk = false;
+      }
+    }
+    renderDone(payload, cutList, addedList, sentOk);
+    show("done");
+  });
+
+  function renderDone(payload, cutList, addedList, sentOk){
+    const r1t = totalMs(r1picks), r2t = totalMs(r2picks);
+    const futureProofed = r1t <= BRIEF.round2Cap;
+    const cutLabels = cutList.map(id => byId[id] ? byId[id].label : id);
+
+    let sentence = "Brief: " + BRIEF.title + ". Round 1 spent " + r1t.toFixed(1) +
+      "ms of 6.7. After the throttle (" + BRIEF.round2Cap.toFixed(1) + "ms), we " +
+      (cutLabels.length ? "cut " + cutLabels.join(", ") : "changed nothing") +
+      " and finished at " + r2t.toFixed(1) + "ms. " +
+      (futureProofed
+        ? "Our Round 1 picks would already have survived the throttle."
+        : "We had to renegotiate.") +
+      (plan === "yes" ? " We think we could have planned ahead." : " We think this was not predictable from the brief.");
+
+    let h = '<h1>' + (sentOk ? "Locked in and sent." : "Locked in.") + '</h1>';
+    if (!sentOk) h += '<p class="lead">Could not reach the server, so read this out instead.</p>';
+
+    h += '<div class="callout' + (futureProofed ? " green" : " gold") + '"><b>' +
+      (futureProofed ? "Future-proofed." : "Caught by the throttle.") + '</b><p>' +
+      (futureProofed
+        ? "Your Round 1 spend already fit inside the Round 2 cap. The throttle cost you nothing."
+        : "Your Round 1 spend did not fit once the phone throttled. That is completely normal — it is the point of the exercise.") +
+      '</p></div>';
+
+    h += '<div class="stat-grid">' +
+      '<div class="stat"><span class="lbl">Brief</span><span class="v" style="font-size:16px">' + esc(BRIEF.title) + '</span></div>' +
+      '<div class="stat"><span class="lbl">Round 1</span><span class="v">' + r1t.toFixed(1) + '<small>/6.7 ms</small></span></div>' +
+      '<div class="stat' + (r2t > BRIEF.round2Cap ? " hot" : " ok") + '"><span class="lbl">Round 2</span><span class="v">' + r2t.toFixed(1) + '<small>/' + BRIEF.round2Cap.toFixed(1) + ' ms</small></span></div>' +
+    '</div>';
+
+    h += '<p class="lead" style="margin-top:14px"><b>Read this out:</b></p>' +
+         '<p class="brief-scenario" id="summarySentence">' + esc(sentence) + '</p>';
+
+    h += '<div class="btnrow"><button class="btn tonal" id="copyBtn">Copy summary</button></div>';
+
+    $("#doneCard").innerHTML = h;
+    $("#copyBtn").addEventListener("click", () => {
+      const text = sentence;
+      if (navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(text).then(() => toast("Copied — paste it into chat"));
+      } else {
+        toast("Select and copy the text above", true);
+      }
+    });
+  }
+
+  /* ---------- boot ---------- */
+  function boot(){
+    const id = getIdentity();
+    if (!id){ show("signin"); return; }
+    paintWho();
+    BRIEF = pickBrief(id.team);
+    $("#briefTag").textContent = BRIEF.title;
+    $("#briefText").textContent = BRIEF.scenario;
+    $("#briefTag2").textContent = BRIEF.title;
+    $("#briefTag4").textContent = BRIEF.title;
+    show("brief");
+  }
+
+  if (getIdentity()) boot(); else show("signin");
+
+})();
+</script>
+</body>
+</html>

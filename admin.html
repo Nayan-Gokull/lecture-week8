@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Spend the Frame — Instructor Board</title>
+<meta name="robots" content="noindex,nofollow" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+<link rel="stylesheet" href="lab.css" />
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero-banner">
+    <span class="hero-mark">
+      <svg viewBox="0 0 24 24" fill="none">
+        <path d="M4 19V11M10 19V5M16 19v-6M4 19h16" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </span>
+    <span class="hero-text">
+      <span class="hero-title">Instructor Board</span>
+      <span class="hero-sub">Spend the Frame</span>
+    </span>
+  </div>
+
+  <main class="main-stage">
+
+    <!-- ============ KEY GATE ============ -->
+    <section id="gate">
+      <div class="card narrow">
+        <h1>Board</h1>
+        <p class="lead">Enter the admin key to pull team submissions.</p>
+        <div class="field">
+          <label for="key">Admin key</label>
+          <input class="input" id="key" type="password" autocomplete="current-password" />
+        </div>
+        <div class="btnrow">
+          <button class="btn primary" id="unlock">Unlock</button>
+        </div>
+        <p class="fine">Set as an encrypted <span class="mono">ADMIN_KEY</span> secret in the Pages dashboard. Students never see this page linked anywhere.</p>
+      </div>
+    </section>
+
+    <!-- ============ BOARD ============ -->
+    <section id="board" hidden>
+      <div class="util-row" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px">
+        <button class="btn tonal" id="refresh">&#8635; Refresh</button>
+        <button class="btn ghost" id="csv">Export CSV</button>
+        <button class="btn danger" id="wipe">Clear all submissions</button>
+        <span class="muted mono" id="meta"></span>
+      </div>
+
+      <div id="mount"><div class="card"><p class="muted">Loading&hellip;</p></div></div>
+    </section>
+
+  </main>
+</div>
+
+<script src="common.js"></script>
+<script src="data/frame-data.js"></script>
+<script src="panels/frame-panel.js"></script>
+<script>
+(function(){
+  const { $, fetchRuns, clearRuns, toast, download, toCSV, stamp, show } = ML;
+  const PANEL = window.PANEL_frame;
+
+  let key = "";
+  let cache = null;
+
+  async function load(force){
+    const mount = $("#mount");
+    if(!cache || force){
+      mount.innerHTML = '<div class="card"><p class="muted">Loading&hellip;</p></div>';
+      try{
+        const data = await fetchRuns(PANEL.endpoint, key);
+        cache = data.runs || [];
+      }catch(err){
+        if(String(err.message).includes("unauthorized")){
+          toast("Key rejected", true);
+          sessionStorage.removeItem("framebudget.key");
+          show("gate");
+          return;
+        }
+        mount.innerHTML = '<div class="card"><p class="bad">Could not load: ' + ML.esc(err.message) + '</p></div>';
+        return;
+      }
+    }
+    $("#meta").textContent = cache.length + " submission" + (cache.length === 1 ? "" : "s") +
+      (cache.length ? " · latest " + stamp(Math.max.apply(null, cache.map(r => r.ts || 0))) : "");
+    PANEL.render(cache, mount);
+  }
+
+  $("#unlock").addEventListener("click", () => {
+    key = $("#key").value.trim();
+    if(!key){ toast("Key required", true); return; }
+    sessionStorage.setItem("framebudget.key", key);
+    show("board");
+    load(true);
+  });
+  $("#key").addEventListener("keydown", e => { if(e.key === "Enter") $("#unlock").click(); });
+
+  $("#refresh").addEventListener("click", () => load(true));
+
+  $("#csv").addEventListener("click", () => {
+    if(!cache || !cache.length){ toast("Nothing to export", true); return; }
+    download("spend-the-frame.csv", toCSV(PANEL.csv(cache)), "text/csv");
+  });
+
+  $("#wipe").addEventListener("click", async () => {
+    if(!confirm("Delete every submission? This cannot be undone.")) return;
+    try{
+      await clearRuns(PANEL.endpoint, key);
+      cache = null;
+      toast("Cleared");
+      load(true);
+    }catch(err){ toast(err.message, true); }
+  });
+
+  const saved = sessionStorage.getItem("framebudget.key");
+  if(saved){ key = saved; show("board"); load(true); } else { show("gate"); }
+})();
+</script>
+</body>
+</html>

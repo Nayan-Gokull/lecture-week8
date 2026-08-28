@@ -1,0 +1,13 @@
+node_modules/
+.wrangler/
+.dev.vars
+.DS_Store
+Thumbs.db
+*.log
+
+# Screenshots produced while checking layouts
+*.png
+!models/*.png
+
+# local dev server KV mirror
+.dev-kv.json

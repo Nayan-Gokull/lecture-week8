@@ -1,0 +1,14 @@
+# Cloudflare Pages redirect rules.
+#
+# There is no build step, so every file in this repo is served publicly.
+# Send documentation and raw data paths back to the hub instead of letting
+# students land on them by guessing a URL.
+#
+# Format: /source /destination [status]
+
+/README.md      /   302
+/README         /   302
+/TEACHING.md    /   302
+/TEACHING       /   302
+/data/          /   302
+/panels/        /   302
