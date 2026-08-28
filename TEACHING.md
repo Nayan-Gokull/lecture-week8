@@ -35,12 +35,19 @@ The old "Rendering & assets" picklist (LOD / atlas / hi-res / hero) is gone. In 
 Teams pick 30, 60 or 90fps, and the budget is computed live: roughly 23.3ms at 30fps, 6.7ms at 60fps, 1.1ms at 90fps.
 
 - **60fps** is the tuned case. Every ground/light/audio/legibility option was calibrated against 6.7ms, so this is where the spending tension is real.
-- **30fps** gives roughly 3x the budget — comfortably more than every remaining option maxed out. A team that picks 30fps will sail through both rounds with almost no spending decisions left among the four free categories (the derived rendering cost is fixed regardless of fps, so it eats a much smaller share of a bigger budget too). That is the point, not a bug: the real decision already happened, at the frame-rate screen. If a room picks 30fps for the kids' game or wayfinding brief without acknowledging the trade-off out loud, that is worth naming in the plenary — the board flags it.
-- **90fps** is deliberately brutal and is there so a team can feel directly why headsets need a different pipeline, not because it is a realistic target for any of these five briefs.
+- **30fps** gives roughly 3x the budget — comfortably more than every remaining option maxed out. A team that picks 30fps will sail through both rounds with almost no spending decisions left among the four free categories (the derived rendering cost is fixed regardless of fps, so it eats a much smaller share of a bigger budget too). That is the point, not a bug: the real decision already happened, at the frame-rate screen. If a room picks 30fps for a motion-heavy brief (kids, wayfinding, fitness, warehouse, concert) without acknowledging the trade-off out loud, that is worth naming in the plenary — the board flags it.
+- **90fps** is deliberately brutal and is there so a team can feel directly why headsets need a different pipeline, not because it is a realistic target for any of these nine briefs.
 
-## Why five different briefs
+## Why nine different briefs
 
-Every room getting the same scenario would make the plenary boring. Every room getting a genuinely different scenario means the plenary is a comparison, and the comparison is where the lesson lives: **the brief decides the spend, not the technology.** The throttle severity is also brief-dependent, on purpose — a fixed percentage of whatever Round 1 budget the team is working with (outdoor keeps ~52%, retail keeps ~84%), so the same relative severity holds however much budget a team started with.
+Every room getting the same scenario would make the plenary boring. Every room getting a genuinely different scenario means the plenary is a comparison, and the comparison is where the lesson lives: **the brief decides the spend, not the technology.** Nine briefs rather than five specifically so a cohort of up to nine breakout rooms can each land on a genuinely different one — with only five, a class that size guarantees repeats, which flattens the comparison the plenary depends on.
+
+The throttle severity is also brief-dependent, on purpose — a fixed percentage of whatever Round 1 budget the team is working with, so the same relative severity holds however much budget a team started with. The four new briefs extend the same spread of continuity and environment that drove the original five:
+
+- **Fitness coaching** (keeps ~60%) — continuous 30–45 minute use, indoors but no airflow across a propped-up phone.
+- **Warehouse pick-assist** (keeps ~45%, the harshest brief) — continuous, shift-length use on a handheld scanner in a warmer-than-average industrial environment. Worse than direct outdoor sun, because duration beats intensity here.
+- **Real estate walkthrough** (keeps ~81%, the mildest brief) — genuine breaks between ten-to-fifteen-minute showings let the phone actually recover, which is itself worth pointing out: not every "repeated use all afternoon" brief throttles the same amount.
+- **Venue wayfinding** (keeps ~64%) — a short walk, but continuous GPS/beacon lookups in a signal-congested crowd and a maxed screen for glare.
 
 ## Running order (35–40 minutes)
 
@@ -80,6 +87,10 @@ No, deliberately — but there are defensible and indefensible ones per brief:
 - **Kids' game** — the brief that should scare a sharp team into protecting frame rate itself, because 20 minutes continuous play is exactly the thermal-cliff scenario.
 - **Outdoor wayfinding** — legibility is not optional here (direct sun on a screen); cutting it to "Nothing" is hardest to defend, and also the one where it happens most.
 - **Accessibility tour** — the brief most likely to be under-thought, because "accessibility" reads as a UI checkbox rather than a performance constraint. Legibility needs the *most* deliberate spend here, not the least.
+- **Fitness coaching** — the phone does not move, but the person does: this is the brief where paying for the expensive ML depth/occlusion tier is hardest to justify, since the overlay only needs to track a body, not ground content convincingly among real objects. Spending there instead of protecting frame rate is the mistake worth pushing on.
+- **Warehouse pick-assist** — a working tool, not a showpiece: legibility and grounding earn their keep here (a picker glancing at an overlay for a split second needs it to be instantly readable and unambiguous), but nobody needs a hero-tier lighting response in a warehouse under fixed fluorescent lighting. Spending on lighting realism here is the overspend to watch for.
+- **Real estate walkthrough** — closest in shape to retail try-on: short bursts, indoors, real breaks. A room that treats this like the museum brief and pays for expensive occlusion is over-engineering for a ten-minute showing.
+- **Venue wayfinding** — legibility against glare and crowd clutter is the genuinely hard problem here, not grounding — arrows floating slightly wrong on a phone someone is glancing at while walking is far less noticeable than text nobody can read in direct sun through a stadium concourse.
 
 ## If a room finishes early
 

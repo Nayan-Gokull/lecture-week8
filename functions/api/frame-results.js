@@ -77,6 +77,10 @@ const BRIEF_THROTTLE_RATIO = {
   kids:          0.567,
   wayfinding:    0.522,
   accessibility: 0.672,
+  fitness:       0.597,
+  warehouse:     0.448,
+  realestate:    0.806,
+  concert:       0.642,
 };
 
 /* ---------------- Stage 1: source the asset ----------------

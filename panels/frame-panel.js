@@ -128,7 +128,7 @@
       html += '</div></div>';
     }
 
-    var motionBriefs = { kids: 1, wayfinding: 1 };
+    var motionBriefs = { kids: 1, wayfinding: 1, fitness: 1, warehouse: 1, concert: 1 };
     var coastedOn30 = runs.filter(function (r) {
       return r.targetFps === 30 && motionBriefs[r.brief];
     }).map(function (r) { return r.team + " (" + briefTitle(r.brief) + ")"; });

@@ -217,4 +217,32 @@ window.FRAME_BRIEFS = [
     throttleLine: "Forty minutes in — screen brightness has been turned up for legibility the entire time, and nobody has put the phone down.",
     throttleRatio: 0.672,  // was 4.5ms at the tuned 6.7ms/60fps baseline
   },
+  {
+    id: "fitness",
+    title: "Fitness coaching overlay",
+    scenario: "A phone is propped on a stand facing someone doing a home workout. The overlay corrects their form in real time, continuously, for a thirty-to-forty-five-minute session.",
+    throttleLine: "Thirty-five minutes into the session, propped upright with no airflow across the back of the case, and the room has warmed up along with the person in it.",
+    throttleRatio: 0.597,  // was 4.0ms at the tuned 6.7ms/60fps baseline
+  },
+  {
+    id: "warehouse",
+    title: "Warehouse pick-assist",
+    scenario: "A handheld scanner-style device overlays the next shelf location for a picker walking a warehouse floor, continuously, for a full shift.",
+    throttleLine: "Four hours into the shift, same device, no charging break, and the warehouse floor runs warmer near the loading bay doors than anywhere else in the building.",
+    throttleRatio: 0.448,  // was 3.0ms at the tuned 6.7ms/60fps baseline — the harshest brief, by design: shift-length continuous use beats even direct outdoor sun
+  },
+  {
+    id: "realestate",
+    title: "Real estate walkthrough",
+    scenario: "A buyer holds an agent's phone up to see furniture staged in an empty room. Each showing is ten to fifteen minutes, indoors, well lit, with a break between viewings.",
+    throttleLine: "Third showing of the afternoon back to back, but each one ends with the phone sitting untouched in the agent's bag for twenty minutes while they chat with the buyer outside.",
+    throttleRatio: 0.806,  // was 5.4ms at the tuned 6.7ms/60fps baseline — the mildest brief, on purpose: real breaks between sessions actually let the phone recover
+  },
+  {
+    id: "concert",
+    title: "Venue wayfinding",
+    scenario: "A phone overlay guides someone to their seat through a crowded stadium concourse. The walk itself is only five to ten minutes, but GPS and beacon lookups run continuously and the screen is maxed for glare.",
+    throttleLine: "It is a sold-out show, the concourse is packed, and forty thousand other phones are fighting for the same signal while yours keeps its screen at full brightness.",
+    throttleRatio: 0.642,  // was 4.3ms at the tuned 6.7ms/60fps baseline
+  },
 ];

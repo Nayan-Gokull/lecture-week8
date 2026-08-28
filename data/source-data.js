@@ -174,6 +174,34 @@
       cheapCase("accessibility", "Tour Label Fixture — Optimised", "Renata Bloch"),
       commissionCase("accessibility", "Team-Modelled Tour Label Fixture", "your team",
         "your team modelled a fixture specifically sized for large-print labels.")
+    ],
+    fitness: [
+      cleanCase("fitness", "Posture Guide Rig — Motion-Capture Raw Export", "Tomasz Wren",
+        "it is exported straight from a mocap studio's pipeline, built for offline film review rather than a phone running it live for forty-five minutes."),
+      cheapCase("fitness", "Posture Guide Rig — Mobile-Optimised", "Priya Sattari"),
+      commissionCase("fitness", "Team-Modelled Posture Guide", "your team",
+        "your team built a simplified guide rig specifically for this workout's movements.")
+    ],
+    warehouse: [
+      cleanCase("warehouse", "Shelf Marker Prop — Facilities Scan Export", "Denholm Achterberg",
+        "it is a facilities-team scan meant for a warehouse floor plan viewer, not for running continuously on a handheld scanner all shift."),
+      cheapCase("warehouse", "Shelf Marker Prop — Optimised", "Callum Ostrowski"),
+      commissionCase("warehouse", "Team-Modelled Shelf Marker", "your team",
+        "your team modelled a marker sized and shaped for this warehouse's actual shelving.")
+    ],
+    realestate: [
+      cleanCase("realestate", "Staged Sofa Scan — Showroom Raw", "Renata Bloch",
+        "it is a showroom product scan built for a furniture catalogue's zoom-in shots, not for a buyer walking around it in real time."),
+      cheapCase("realestate", "Staged Sofa — AR-Optimised", "Denholm Achterberg"),
+      commissionCase("realestate", "Team-Modelled Staged Sofa", "your team",
+        "your team modelled a generic sofa sized to the room being staged.")
+    ],
+    concert: [
+      cleanCase("concert", "Directional Beacon Marker — Venue Scan Export", "Priya Sattari",
+        "it is bundled with a huge venue-signage pack and nobody stripped the unused detail out of this one marker."),
+      cheapCase("concert", "Directional Beacon Marker — Optimised", "Tomasz Wren"),
+      commissionCase("concert", "Team-Modelled Beacon Marker", "your team",
+        "a beacon marker is simple enough that your team's own version holds up close to a specialist's.")
     ]
   };
 })();

@@ -17,7 +17,7 @@ This closes out the AR unit as an end-to-end simulation rather than three separa
 
 ## What the activity actually does
 
-1. **Sign in** (on `source.html`). Team name (or room number) + optional member names, stored in `localStorage`. The team name deterministically picks one of five briefs (museum piece, retail try-on, kids' game, outdoor wayfinding, low-vision accessibility tour) — same hash-based assignment used throughout this course's activities, so every room gets a different scenario without a lookup table, and every stage agrees on the same brief for the same team without a server round trip.
+1. **Sign in** (on `source.html`). Team name (or room number) + optional member names, stored in `localStorage`. The team name deterministically picks one of nine briefs (museum piece, retail try-on, kids' game, outdoor wayfinding, low-vision accessibility tour, fitness coaching, warehouse pick-assist, real estate walkthrough, venue wayfinding) — same hash-based assignment used throughout this course's activities, so every room gets a different scenario without a lookup table, and every stage agrees on the same brief for the same team without a server round trip. Nine briefs, not five, so a cohort of up to nine breakout rooms can each land on a genuinely different one.
 
 2. **Stage 1 — Source the asset.** Three listings for the same hero prop: a **clean, safe, unoptimised** stock scan; a **cheap, pre-optimised, licence-risky** listing (CC BY-NC — the same "graded, public, portfolio" pressure as the Model Lab's own arguable licence cases); and a **commissioned/original** asset with no licence question at all but a mid-range cost. The team picks one, gives it a real verdict (ship as-is / with attribution / only with a change or permission / do not ship), and locks it in. That listing's triangle/material/texture cost is now their hero asset for stage 2 — there is no going back to pick a different one.
 
@@ -40,8 +40,8 @@ lab.css                 activity component layer — the frame-budget visualizer
 common.js               window.ML — shared helpers: identity, the source->scene->frame pipeline
                         handoff (getPipe/setPipe), the brief hash, API, CSV
 data/frame-data.js      stage 3: fps tiers, categories, ground/light/audio/legibility options,
-                        the five briefs, and the render-cost-from-scene formula — retune here
-data/source-data.js     stage 1: the three hero-asset cost profiles + five briefs' worth of listings
+                        the nine briefs, and the render-cost-from-scene formula — retune here
+data/source-data.js     stage 1: the three hero-asset cost profiles + nine briefs' worth of listings
 data/scene-data.js      stage 2: the generic scene prop catalogue, categories, caps
 panels/frame-panel.js   admin board renderer + CSV export — covers all three stages
 functions/api/          the one Pages Function, server-side scoring for the whole pipeline
@@ -102,9 +102,9 @@ One submission per team, enforced in `localStorage`, written once at the end of 
 
 Three data files, each plain data with no logic:
 
-- `data/source-data.js` — the three hero-asset cost profiles (`clean` / `cheap` / `commission`) and the five briefs' worth of listings built from them
+- `data/source-data.js` — the three hero-asset cost profiles (`clean` / `cheap` / `commission`) and the nine briefs' worth of listings built from them
 - `data/scene-data.js` — the generic scene prop catalogue, category requirements, and the scene-wide caps
-- `data/frame-data.js` — the fps tiers, the four freely-picked categories, the five briefs' throttle ratios, and the formula that turns a scene's draw calls + texture memory into a rendering-ms cost
+- `data/frame-data.js` — the fps tiers, the four freely-picked categories, the nine briefs' throttle ratios, and the formula that turns a scene's draw calls + texture memory into a rendering-ms cost
 
 **If you change any cost number, cap, or requirement in any of these three files, update the matching copy in `functions/api/frame-results.js` too** — the server never reads the client data files, by design, so they have to be kept in sync by hand (same convention as the Model Lab's own budget activity).
 
