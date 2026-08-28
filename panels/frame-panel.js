@@ -1,11 +1,15 @@
 /* ============================================================
-   Instructor board panel — "Spend the Frame"
+   Instructor board panel — "Ship It" (source -> scene -> frame)
 
-   The plenary gold is usually one of three things:
+   Covers all three stages from one record per team: which hero asset
+   they sourced and whether the licence verdict held up, what their
+   scene actually cost to render, and the frame-budget rounds that
+   cost feeds into. The plenary gold is usually one of:
    - how many rooms already fit the throttled budget without
      changing anything ("future-proofed")
    - which category gets cut first when squeezed
-   - who paid for spatial audio or a risky "nothing" pick anyway
+   - who paid for spatial audio, a risky "nothing" pick, or a
+     licence-risky hero asset without a defensible attribution
 
    Relies on window.FRAME_BRIEFS and window.FRAME_OPTIONS (loaded
    from data/frame-data.js) purely for display labels — every number
@@ -232,7 +236,7 @@
     var maps = labelMaps();
     var rows = [["team", "members", "when", "brief",
                  "hero_pick", "hero_licence", "hero_verdict_outcome", "hero_attribution",
-                 "scene_tris", "scene_draws", "scene_texture_mb", "render_ms",
+                 "scene_tris", "scene_draws", "scene_texture_mb", "render_ms", "scene_lever", "scene_justification",
                  "target_fps", "round1_cap", "round1_ms", "round1_valid",
                  "round2_cap", "round2_ms", "round2_valid", "future_proofed",
                  "cut", "added", "planned_ahead", "note", "round1_justification"]];
@@ -242,6 +246,7 @@
         r.team, r.members || "", ML.stamp(r.ts), (maps.briefs[r.brief] && maps.briefs[r.brief].title) || r.brief,
         s.pick || "", HERO_LICENCE[s.pick] || "", s.outcome || "", s.attribution || "",
         t.tris || "", t.draws || "", t.textureMB || "", sc.renderMs != null ? sc.renderMs : "",
+        sc.lever || "", sc.justification || "",
         r.targetFps || "", r.round1.cap, r.round1.ms, r.round1.valid ? "yes" : "no",
         r.round2.cap, r.round2.ms, r.round2.valid ? "yes" : "no",
         r.futureProofed ? "yes" : "no",

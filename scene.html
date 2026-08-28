@@ -328,6 +328,11 @@
     h += '<div class="callout green"><b>What this costs in stage 3:</b><p>' + T.draws + ' draw calls and ' + T.textureMB +
       'MB of texture works out to <b>' + renderMs.toFixed(1) + 'ms</b> of rendering cost, every frame, before you spend a single millisecond on grounding, lighting, audio or legibility.</p></div>';
 
+    h += '<div class="callout"><b>When your room is called, say this:</b>' +
+         '<p>&ldquo;We came in at ' + fmtInt(T.tris) + ' triangles, ' + T.draws + ' draw calls and ' +
+         T.textureMB + ' MB. We pulled the <b>' + esc(String(leverLbl).toLowerCase()) + '</b> lever. ' +
+         'What the customer loses: ' + esc(just) + '&rdquo;</p></div>';
+
     h += '<div class="btnrow"><a class="btn primary" href="index.html">Stage 3: spend the frame &rarr;</a></div>';
     $("#doneCard").innerHTML = h;
   }

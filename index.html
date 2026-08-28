@@ -523,19 +523,36 @@
     });
   }
 
-  /* ---------- boot ---------- */
+  /* ---------- boot ----------
+     A team's rendering cost is fixed the moment they leave scene.html —
+     it does not shrink when the throttle hits, only the total budget
+     does. That means a heavy-but-otherwise-reasonable scene can make
+     Round 2 mathematically impossible at 90fps for every single brief
+     (the throttled cap can fall below the locked rendering cost alone,
+     with nothing left to cut since rendering cannot be removed). There
+     is no way back to scene.html once here, so an fps pick that would
+     strand a team at the throttle reveal is disabled up front, using
+     this team's own real rendering cost — not shown as a free option
+     that quietly turns into a dead end four screens later. */
+  function fpsFeasible(fps){
+    const r1cap = capForFps(fps);
+    const r2cap = Math.round(r1cap * BRIEF.throttleRatio * 10) / 10;
+    return RENDER_MS <= r2cap;
+  }
+
   function renderFpsOpts(){
-    $("#fpsOpts").innerHTML = FPS_OPTIONS.map(f =>
-      '<button type="button" class="opt" data-fps="' + f.fps + '" aria-pressed="false">' +
-        '<span class="ttl">' + f.label + ' &mdash; ' + esc(f.tag) + '</span>' +
-        '<span class="sub">' + esc(f.note) + '</span></button>'
-    ).join("");
+    $("#fpsOpts").innerHTML = FPS_OPTIONS.map(f => {
+      const ok = fpsFeasible(f.fps);
+      return '<button type="button" class="opt' + (ok ? "" : " is-locked") + '" data-fps="' + f.fps + '" aria-pressed="false"' + (ok ? "" : " disabled") + '>' +
+        '<span class="ttl">' + f.label + ' &mdash; ' + esc(ok ? f.tag : "Not enough headroom") + '</span>' +
+        '<span class="sub">' + esc(ok ? f.note : "Your Scene Build's rendering cost (" + RENDER_MS.toFixed(1) + "ms) would already be more than this brief's throttled budget at " + f.fps + "fps, with nothing left to cut. Pick a steadier target.") + '</span></button>';
+    }).join("");
     bindPress($("#fpsOpts"));
   }
 
   $("#fpsOpts").addEventListener("click", e => {
     const b = e.target.closest(".opt");
-    if (!b) return;
+    if (!b || b.disabled) return;
     TARGET_FPS = Number(b.dataset.fps);
     R1_CAP = capForFps(TARGET_FPS);
     $$("#fpsOpts .opt").forEach(x => x.setAttribute("aria-pressed", String(x === b)));

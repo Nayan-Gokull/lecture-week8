@@ -106,7 +106,7 @@
 
   $("#csv").addEventListener("click", () => {
     if(!cache || !cache.length){ toast("Nothing to export", true); return; }
-    download("spend-the-frame.csv", toCSV(PANEL.csv(cache)), "text/csv");
+    download("ship-it-results.csv", toCSV(PANEL.csv(cache)), "text/csv");
   });
 
   $("#wipe").addEventListener("click", async () => {

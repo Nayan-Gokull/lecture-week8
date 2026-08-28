@@ -267,12 +267,16 @@
   function finish(){
     const pipe = getPipe(me.team);
     const s = pipe.source;
+    const OUTCOME_LABEL = { correct: "held up", incorrect: "missed it", defensible: "defensible", "hard-to-defend": "hard to defend" };
     let h = '<h1>Hero asset locked in.</h1>';
     h += '<div class="stat-grid">' +
       '<div class="stat"><span class="lbl">Asset</span><span class="v" style="font-size:15px">' + esc(s.caseTitle) + '</span></div>' +
       '<div class="stat"><span class="lbl">Licence</span><span class="v" style="font-size:16px">' + esc(s.licence) + '</span></div>' +
       '<div class="stat"><span class="lbl">Cost</span><span class="v" style="font-size:16px">' + s.model.tris.toLocaleString() + ' tris</span></div>' +
+      '<div class="stat' + (s.outcome === "incorrect" || s.outcome === "hard-to-defend" ? " hot" : " ok") +
+        '"><span class="lbl">Verdict</span><span class="v" style="font-size:16px">' + esc(OUTCOME_LABEL[s.outcome] || s.outcome) + '</span></div>' +
     '</div>';
+    if (s.attribution) h += '<p class="fine">Your attribution: &ldquo;' + esc(s.attribution) + '&rdquo;</p>';
     h += '<div class="btnrow"><a class="btn primary" href="scene.html">Stage 2: build the scene &rarr;</a></div>';
     $("#lockedCard").innerHTML = h;
     show("locked");
