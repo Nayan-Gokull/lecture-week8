@@ -12,6 +12,13 @@
    category-coverage flag and the cut/added lists are recomputed here
    from the raw pick id arrays, against the copy of the cost table
    below — kept in sync with data/frame-data.js by hand.
+
+   See data/frame-data.js for the reasoning behind each ms value — in
+   short, the 6.7ms budget itself is a teaching simplification, but the
+   relative ordering and proportion between options is checked against
+   a real basis (published mobile depth-inference benchmarks, known
+   mobile shadow-mapping cost, HRTF vs convolution reverb DSP cost,
+   and the Model Lab budget table's own asset numbers), not guessed.
    ============================================================ */
 
 const PREFIX = "frame:";
@@ -31,7 +38,7 @@ const OPTIONS = {
   g_occluder: { ms: 0.2, category: "ground" },
   g_contact:  { ms: 0.3, category: "ground" },
   g_lidar:    { ms: 1.2, category: "ground" },
-  g_mldepth:  { ms: 2.0, category: "ground" },
+  g_mldepth:  { ms: 3.5, category: "ground" },
 
   l_none:     { ms: 0.0, category: "light" },
   l_estimate: { ms: 0.3, category: "light" },

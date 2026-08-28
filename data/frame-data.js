@@ -33,7 +33,48 @@ window.FRAME_CATEGORIES = [
 
 /* flags: risky = a real design gap the admin board will call out
           deviceGate = ships on premium hardware only
-          headsetOnly = only correct if the user is definitely wearing headphones */
+          headsetOnly = only correct if the user is definitely wearing headphones
+
+   Where these ms figures come from
+   ---------------------------------
+   None of this is profiler output — the whole 6.7ms budget is itself a
+   teaching simplification (see the comment above). What is NOT arbitrary
+   is the relative ordering and rough proportion between options, each
+   checked against a real basis rather than picked to make the activity
+   feel balanced:
+
+   - Grounding: LiDAR occlusion reads an existing hardware depth sensor
+     (cheap); ML depth occlusion runs a monocular depth network every
+     frame. Published mobile benchmarks put real monocular depth
+     inference at roughly 6-50ms even on optimised models (e.g. LiteDepth,
+     CVPR 2021W; Yucel et al., CVPR 2021W), which would blow the whole
+     budget on its own. 3.5ms compresses that reality down to the
+     activity's scale while keeping it unambiguously the single most
+     expensive line on the sheet, exactly as it would be in practice.
+
+   - Lighting: real-time shadow mapping costs more than image-based
+     lighting on mobile GPUs is well documented (many mobile GPUs avoid
+     traditional shadow mapping for exactly this reason), so the shadow
+     option is priced above the IBL/probe option, which is itself priced
+     above plain light estimation (a cheap value read, not a render pass).
+
+   - Audio: HRTF binaural spatialisation is a per-source filter, costing
+     more per source than a single shared algorithmic reverb bus — but
+     nowhere near what a long convolution reverb costs, since a convolution
+     impulse response for a real space can run for seconds while an HRTF
+     impulse response runs for a few hundred samples. Long reverb is
+     priced as the second most expensive item on the whole sheet for
+     exactly that reason.
+
+   - Rendering: mirrors the Model Lab's own Budget Table numbers directly
+     — an atlased/LOD asset is cheap because it collapses draw calls, an
+     unoptimised hero asset is expensive because it does not.
+
+   - Legibility: every option here is a flat UI overlay pass (an outline,
+     a scrim, a backplate), which is why the whole category sits at the
+     bottom of the sheet — that is the actual point of teaching it as the
+     free win.
+*/
 window.FRAME_OPTIONS = [
   // ---- Grounding & occlusion ----
   { id: "g_none",     category: "ground", label: "Nothing",
@@ -45,7 +86,7 @@ window.FRAME_OPTIONS = [
   { id: "g_lidar",    category: "ground", label: "LiDAR occlusion",
     note: "Crisp and fast. Pro / Max hardware only.", ms: 1.2, deviceGate: true },
   { id: "g_mldepth",  category: "ground", label: "ML depth occlusion (RGB)",
-    note: "Works on almost any phone, but edges are soft and depth lag makes it “chew” at boundaries.", ms: 2.0 },
+    note: "Works on almost any phone, but running the network every frame is the single most expensive line on this whole sheet.", ms: 3.5 },
 
   // ---- Lighting ----
   { id: "l_none",     category: "light", label: "Nothing",
