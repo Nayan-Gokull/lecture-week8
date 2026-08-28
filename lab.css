@@ -329,3 +329,10 @@ p.bad{ color:var(--bad); font-weight:700; }
 @media (max-width:819px){
   .stackbar-wrap{ height:150px; }
 }
+
+/* ---------- pinned brief recap (Round 1 / Round 2) ----------
+   Same visual language as the Brief screen's scenario box, but
+   sized down since it now sits above a dense category list rather
+   than alone on its own screen. */
+.brief-recap{ margin:0 0 12px; padding:10px 14px; font-size:13px; line-height:1.45; }
+.brief-recap .tag{ margin-bottom:3px; }

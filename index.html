@@ -89,6 +89,10 @@
 
       <div class="worksplit">
       <div class="maincol">
+        <div class="brief-scenario brief-recap">
+          <span class="tag" id="recapTagR1"></span>
+          <p id="recapTextR1"></p>
+        </div>
         <div class="card" id="catList1"></div>
 
         <div class="card">
@@ -149,6 +153,10 @@
 
       <div class="worksplit">
       <div class="maincol">
+        <div class="brief-scenario brief-recap">
+          <span class="tag" id="recapTagR2"></span>
+          <p id="recapTextR2"></p>
+        </div>
         <div class="card" id="catList2"></div>
 
         <div class="card">
@@ -518,10 +526,15 @@
     $("#briefText").textContent = BRIEF.scenario;
     $("#briefTag2").textContent = BRIEF.title;
     $("#briefTag4").textContent = BRIEF.title;
+    $("#recapTagR1").textContent = "Your brief: " + BRIEF.title;
+    $("#recapTextR1").textContent = BRIEF.scenario;
+    $("#recapTagR2").textContent = "Your brief: " + BRIEF.title;
+    $("#recapTextR2").textContent = BRIEF.scenario;
     show("brief");
   }
 
   if (me) boot(); else show("signin");
+
 
 
 })();
