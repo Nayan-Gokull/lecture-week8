@@ -69,7 +69,7 @@
 
         <div class="callout gold">
           <b>The rule for this exercise.</b>
-          <p>One frame at 60fps is 16.7 milliseconds. Camera capture, VIO and image tracking spend roughly 10ms of that before your own code runs. <strong>You are budgeting what is left: 6.7ms.</strong> Every realism feature you add has a cost, and you cannot go over.</p>
+          <p>One frame at 60fps is 16.7 milliseconds. Camera capture, VIO and image tracking spend roughly 10ms of that before your own code runs. <strong>You are budgeting what is left: 6.7ms.</strong> Every realism feature you add has a cost. You <em>can</em> go over &mdash; the bar on the side will turn red and show it &mdash; but you cannot lock in until you have cut back down. That is deliberate: in a real project you overspend first and optimise second, not the other way round.</p>
         </div>
 
         <p class="lead">You will pick from five categories: grounding, lighting, audio, legibility and rendering. Spend it the way your specific brief needs, not the way that seems cleverest in the abstract. There is no single right answer &mdash; there is a right answer <em>for your brief.</em></p>
@@ -87,25 +87,41 @@
         <a class="swap" href="index.html">leave</a>
       </div>
 
-      <div class="card meters">
-        <div class="meter-row">
-          <div class="meter-head"><span class="name">Frame budget &mdash; Round 1</span><span class="val" id="vMs1">0.0 / 6.7 ms</span></div>
-          <div class="meter"><div class="meter-fill" id="fMs1"></div></div>
+      <div class="worksplit">
+      <div class="maincol">
+        <div class="card" id="catList1"></div>
+
+        <div class="card">
+          <div class="field">
+            <label for="just1">In one line: why did you spend where you spent?</label>
+            <textarea class="input" id="just1" rows="2" maxlength="240" placeholder="e.g. we paid for ML depth occlusion because visitors get close enough to notice it float"></textarea>
+          </div>
+          <div class="btnrow">
+            <button class="btn primary" id="lockR1" disabled>Lock in Round 1 &rarr;</button>
+          </div>
+          <p class="fine" id="block1">Fill every mandatory category first.</p>
         </div>
-        <p class="fine" id="hint1">Pick at least one option in every mandatory category. &ldquo;Nothing&rdquo; counts as a pick &mdash; it is a real decision, not a way to dodge the category.</p>
       </div>
 
-      <div class="card" id="catList1"></div>
-
-      <div class="card">
-        <div class="field">
-          <label for="just1">In one line: why did you spend where you spent?</label>
-          <textarea class="input" id="just1" rows="2" maxlength="240" placeholder="e.g. we paid for ML depth occlusion because visitors get close enough to notice it float"></textarea>
+      <div class="sidebar">
+        <div class="card stackcard">
+          <div class="hd"><h3>Budget</h3><span class="side">Round 1</span></div>
+          <div class="stacktotal" id="totalR1">0.0 <small>/ 6.7 ms</small></div>
+          <div class="stackbar-wrap" id="barR1">
+            <div class="stackbar-overzone" id="overzoneR1"></div>
+            <div class="stackbar-capline" id="capLineR1"><span id="capLabelR1"></span></div>
+            <div class="stackbar-track" id="trackR1"></div>
+          </div>
+          <div class="stackbar-legend">
+            <span class="legend-item"><i class="legend-dot cat-ground"></i>Grounding</span>
+            <span class="legend-item"><i class="legend-dot cat-light"></i>Lighting</span>
+            <span class="legend-item"><i class="legend-dot cat-audio"></i>Audio</span>
+            <span class="legend-item"><i class="legend-dot cat-legibility"></i>Legibility</span>
+            <span class="legend-item"><i class="legend-dot cat-render"></i>Rendering</span>
+          </div>
+          <p class="fine" id="hint1">&ldquo;Nothing&rdquo; counts as a pick. Going over is allowed &mdash; the bar turns red. You cut back down before locking in, same as a real optimisation pass.</p>
         </div>
-        <div class="btnrow">
-          <button class="btn primary" id="lockR1" disabled>Lock in Round 1 &rarr;</button>
-        </div>
-        <p class="fine" id="block1">Fill every mandatory category first.</p>
+      </div>
       </div>
     </section>
 
@@ -131,30 +147,46 @@
         <span class="who" id="whoName4"></span><span class="mem" id="briefTag4"></span>
       </div>
 
-      <div class="card meters">
-        <div class="meter-row">
-          <div class="meter-head"><span class="name">Frame budget &mdash; Round 2 (throttled)</span><span class="val" id="vMs2">0.0 / 0.0 ms</span></div>
-          <div class="meter"><div class="meter-fill" id="fMs2"></div></div>
+      <div class="worksplit">
+      <div class="maincol">
+        <div class="card" id="catList2"></div>
+
+        <div class="card">
+          <p class="lead"><b>Could you have designed for this from the start?</b></p>
+          <div class="opts row" id="planOpts">
+            <button type="button" class="opt" data-v="yes" aria-pressed="false"><span class="ttl">Yes</span><span class="sub">We would have picked differently in Round 1 if we had known</span></button>
+            <button type="button" class="opt" data-v="no" aria-pressed="false"><span class="ttl">No</span><span class="sub">This genuinely was not predictable from the brief</span></button>
+          </div>
+          <div class="field">
+            <label for="note2">In one line: what did you cut, and why that and not something else?</label>
+            <textarea class="input" id="note2" rows="2" maxlength="240" placeholder="e.g. we dropped the long reverb first, it was the single most expensive line and nobody would miss it"></textarea>
+          </div>
+          <div class="btnrow">
+            <button class="btn primary" id="submit" disabled>Lock in final answer &rarr;</button>
+          </div>
+          <p class="fine" id="block2">Fit under the new budget, and tell us which way you would have planned ahead.</p>
         </div>
-        <p class="fine">Items you had in Round 1 are marked <b>cut</b> if you remove them, and anything new is marked <b>added</b>.</p>
       </div>
 
-      <div class="card" id="catList2"></div>
-
-      <div class="card">
-        <p class="lead"><b>Could you have designed for this from the start?</b></p>
-        <div class="opts row" id="planOpts">
-          <button type="button" class="opt" data-v="yes" aria-pressed="false"><span class="ttl">Yes</span><span class="sub">We would have picked differently in Round 1 if we had known</span></button>
-          <button type="button" class="opt" data-v="no" aria-pressed="false"><span class="ttl">No</span><span class="sub">This genuinely was not predictable from the brief</span></button>
+      <div class="sidebar">
+        <div class="card stackcard">
+          <div class="hd"><h3>Budget</h3><span class="side">Round 2, throttled</span></div>
+          <div class="stacktotal" id="totalR2">0.0 <small>/ 0.0 ms</small></div>
+          <div class="stackbar-wrap" id="barR2">
+            <div class="stackbar-overzone" id="overzoneR2"></div>
+            <div class="stackbar-capline" id="capLineR2"><span id="capLabelR2"></span></div>
+            <div class="stackbar-track" id="trackR2"></div>
+          </div>
+          <div class="stackbar-legend">
+            <span class="legend-item"><i class="legend-dot cat-ground"></i>Grounding</span>
+            <span class="legend-item"><i class="legend-dot cat-light"></i>Lighting</span>
+            <span class="legend-item"><i class="legend-dot cat-audio"></i>Audio</span>
+            <span class="legend-item"><i class="legend-dot cat-legibility"></i>Legibility</span>
+            <span class="legend-item"><i class="legend-dot cat-render"></i>Rendering</span>
+          </div>
+          <p class="fine">Kept from Round 1 stays in place. Cut something and its slice disappears &mdash; add something new and a slice appears.</p>
         </div>
-        <div class="field">
-          <label for="note2">In one line: what did you cut, and why that and not something else?</label>
-          <textarea class="input" id="note2" rows="2" maxlength="240" placeholder="e.g. we dropped the long reverb first, it was the single most expensive line and nobody would miss it"></textarea>
-        </div>
-        <div class="btnrow">
-          <button class="btn primary" id="submit" disabled>Lock in final answer &rarr;</button>
-        </div>
-        <p class="fine" id="block2">Fit under the new budget, and tell us which way you would have planned ahead.</p>
+      </div>
       </div>
     </section>
 
@@ -254,8 +286,6 @@
       h += '<h4 class="catname">' + esc(cat.label) + ' <span class="req">(' + reqTxt + ')</span></h4><div class="picklist">';
       opts.forEach(o => {
         const picked = picks.has(o.id);
-        const wouldTotal = totalMs(new Set([...picks].filter(x => x !== o.id).concat(picked ? [] : [o.id])));
-        const disabled = !picked && wouldTotal > cap + 1e-9;
         let tags = "";
         if (o.risky)      tags += ' <em class="vtag risky">risk</em>';
         if (o.deviceGate) tags += ' <em class="vtag gate">pro/max only</em>';
@@ -265,7 +295,7 @@
           if (r1picks.has(o.id)) diffClass += " was-picked-r1";
           if (!r1picks.has(o.id)) diffClass += " new-in-r2";
         }
-        h += '<button type="button" class="pick' + diffClass + (disabled ? " disabled" : "") +
+        h += '<button type="button" class="pick' + diffClass +
              '" data-id="' + esc(o.id) + '" aria-pressed="' + picked + '">' +
           '<span class="box"><svg viewBox="0 0 24 24"><path d="M4 12.5 9.5 18 20 6.5"/></svg></span>' +
           '<span class="nm">' + esc(o.label) + tags + '<span class="sub">' + esc(o.note) + '</span></span>' +
@@ -278,18 +308,52 @@
     bindPress(mount);
   }
 
+  /* ================= STACKED BUDGET VISUALIZER =================
+     One vertical bar per round, sidebar-mounted. Segments render in
+     fixed category/option order (not pick order) so a pick keeps the
+     same visual slot as neighbours are toggled. Going over the cap is
+     allowed by design — the bar runs into a tinted zone above the cap
+     line instead of clamping, matching how the Budget Table meters
+     already work: show the overage, then make the team cut it back. */
+
+  const CAT_CLASS = { ground:"cat-ground", light:"cat-light", audio:"cat-audio",
+                       legibility:"cat-legibility", render:"cat-render" };
+
+  function paintStack(picks, cap, suffix){
+    const total = totalMs(picks);
+    const over = total > cap + 1e-9;
+    const scale = Math.max(cap * 1.4, total * 1.05, 0.1);
+    const capPct = clamp((cap / scale) * 100, 0, 100);
+
+    const totalEl = $("#total" + suffix);
+    totalEl.innerHTML = total.toFixed(1) + ' <small>/ ' + cap.toFixed(1) + ' ms</small>' +
+      (over ? ' <span class="overby">+' + (total - cap).toFixed(1) + ' over</span>' : '');
+    totalEl.classList.toggle("over", over);
+
+    $("#capLabel" + suffix).textContent = cap.toFixed(1) + " cap";
+    $("#capLine" + suffix).style.bottom = capPct.toFixed(1) + "%";
+
+    const overzone = $("#overzone" + suffix);
+    overzone.style.height = (100 - capPct).toFixed(1) + "%";
+    overzone.style.display = over ? "block" : "none";
+
+    $("#bar" + suffix).classList.toggle("over", over);
+
+    const track = $("#track" + suffix);
+    track.innerHTML = OPTIONS.filter(o => picks.has(o.id)).map(o => {
+      const h = clamp((o.ms / scale) * 100, 0, 100);
+      return '<div class="stackseg ' + CAT_CLASS[o.category] + '" style="height:' + h.toFixed(2) +
+        '%" title="' + esc(o.label) + ' — ' + (o.ms === 0 ? "free" : o.ms.toFixed(1) + "ms") + '"></div>';
+    }).join("");
+  }
+
   /* ================= ROUND 1 ================= */
 
   function refreshR1(){
-    const t = totalMs(r1picks);
-    $("#vMs1").textContent = t.toFixed(1) + " / " + R1_CAP.toFixed(1) + " ms";
-    $("#vMs1").classList.toggle("over", t > R1_CAP);
-    const fill = $("#fMs1");
-    fill.style.width = clamp((t / R1_CAP) * 100, 0, 100).toFixed(1) + "%";
-    fill.className = "meter-fill" + (t > R1_CAP ? " over" : (t / R1_CAP >= 0.85 ? " warn" : ""));
-
     renderCatList("#catList1", r1picks, R1_CAP, 1);
+    paintStack(r1picks, R1_CAP, "R1");
 
+    const t = totalMs(r1picks);
     const st = catState(r1picks);
     const bad = st.filter(s => !s.met);
     const ok = !bad.length && t <= R1_CAP;
@@ -304,7 +368,7 @@
 
   $("#catList1").addEventListener("click", e => {
     const b = e.target.closest(".pick");
-    if (!b || b.classList.contains("disabled")) return;
+    if (!b) return;
     const id = b.dataset.id;
     if (r1picks.has(id)) r1picks.delete(id); else r1picks.add(id);
     refreshR1();
@@ -314,15 +378,10 @@
 
   function refreshR2(){
     const cap = BRIEF.round2Cap;
-    const t = totalMs(r2picks);
-    $("#vMs2").textContent = t.toFixed(1) + " / " + cap.toFixed(1) + " ms";
-    $("#vMs2").classList.toggle("over", t > cap);
-    const fill = $("#fMs2");
-    fill.style.width = clamp((t / cap) * 100, 0, 100).toFixed(1) + "%";
-    fill.className = "meter-fill" + (t > cap ? " over" : (t / cap >= 0.85 ? " warn" : ""));
-
     renderCatList("#catList2", r2picks, cap, 2);
+    paintStack(r2picks, cap, "R2");
 
+    const t = totalMs(r2picks);
     const st = catState(r2picks);
     const bad = st.filter(s => !s.met);
     const ok = !bad.length && t <= cap && plan;
@@ -339,7 +398,7 @@
 
   $("#catList2").addEventListener("click", e => {
     const b = e.target.closest(".pick");
-    if (!b || b.classList.contains("disabled")) return;
+    if (!b) return;
     const id = b.dataset.id;
     if (r2picks.has(id)) r2picks.delete(id); else r2picks.add(id);
     refreshR2();
@@ -463,6 +522,7 @@
   }
 
   if (me) boot(); else show("signin");
+
 
 
 })();

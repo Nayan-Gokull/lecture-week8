@@ -246,3 +246,86 @@
 
 /* ---------- inline error text (admin board load failures) ---------- */
 p.bad{ color:var(--bad); font-weight:700; }
+
+/* ============================================================
+   Stacked frame-budget visualizer
+   A vertical bar, sidebar-mounted, one segment per active pick,
+   stacked bottom-up in a fixed category order so a pick's visual
+   position stays stable as neighbours are toggled. The cap is a
+   dashed line at its true position on the scale — going over is
+   allowed and expected, the bar just runs past the line into a
+   tinted "over" zone instead of clamping at 100%.
+   ============================================================ */
+:root{
+  --cat-ground:     #2f6f4f;
+  --cat-light:      #c1852b;
+  --cat-audio:      #3a6ea5;
+  --cat-legibility: #6b4f8a;
+  --cat-render:     #a5472f;
+}
+
+.worksplit{ display:grid; gap:16px; }
+@media (min-width:820px){
+  .worksplit{ grid-template-columns:1fr 248px; align-items:start; }
+  .worksplit .sidebar{ position:sticky; top:6px; }
+}
+
+.stackcard .hd{ margin-bottom:2px; }
+.stacktotal{
+  font-size:26px; font-weight:900; font-variant-numeric:tabular-nums;
+  line-height:1.1; margin:2px 0 10px; color:var(--ink);
+}
+.stacktotal small{ font-size:13px; font-weight:800; color:var(--muted); }
+.stacktotal.over{ color:var(--bad); }
+.stacktotal .overby{
+  display:inline-block; margin-left:8px; font-size:11px; font-weight:800;
+  text-transform:uppercase; letter-spacing:.04em; color:#fff;
+  background:var(--bad); padding:2px 7px; border-radius:100px; vertical-align:2px;
+}
+
+.stackbar-wrap{
+  position:relative; height:260px; margin:4px 0 2px;
+  background:var(--cream-2); border:var(--border-w) solid var(--ink);
+  border-radius:var(--radius-sm); overflow:hidden;
+}
+.stackbar-wrap.over{ border-color:var(--bad); }
+.stackbar-overzone{
+  position:absolute; left:0; right:0; top:0; z-index:1;
+  background:rgba(192,71,59,.12); display:none;
+}
+.stackbar-capline{
+  position:absolute; left:0; right:0; height:0; z-index:3;
+  border-top:2px dashed var(--ink);
+}
+.stackbar-capline span{
+  position:absolute; right:4px; bottom:2px; font-size:9.5px; font-weight:800;
+  background:var(--surface); color:var(--ink); padding:1px 5px; border-radius:3px;
+  border:1px solid var(--ink); white-space:nowrap;
+}
+.stackbar-track{
+  position:absolute; left:0; right:0; bottom:0; top:0; z-index:2;
+  display:flex; flex-direction:column-reverse;
+}
+.stackseg{
+  flex:0 0 auto; width:100%; min-height:3px; box-sizing:border-box;
+  border-top:1px solid rgba(255,255,255,.55);
+  transition:height .18s var(--ease);
+}
+.stackseg.cat-ground{ background:var(--cat-ground); }
+.stackseg.cat-light{ background:var(--cat-light); }
+.stackseg.cat-audio{ background:var(--cat-audio); }
+.stackseg.cat-legibility{ background:var(--cat-legibility); }
+.stackseg.cat-render{ background:var(--cat-render); }
+
+.stackbar-legend{ display:flex; flex-wrap:wrap; gap:5px 11px; margin:9px 0 2px; font-size:11px; color:var(--muted); }
+.legend-item{ display:inline-flex; align-items:center; gap:5px; }
+.legend-dot{ width:9px; height:9px; border-radius:2px; flex:0 0 auto; display:inline-block; }
+.legend-dot.cat-ground{ background:var(--cat-ground); }
+.legend-dot.cat-light{ background:var(--cat-light); }
+.legend-dot.cat-audio{ background:var(--cat-audio); }
+.legend-dot.cat-legibility{ background:var(--cat-legibility); }
+.legend-dot.cat-render{ background:var(--cat-render); }
+
+@media (max-width:819px){
+  .stackbar-wrap{ height:150px; }
+}
