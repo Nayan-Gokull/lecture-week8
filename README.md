@@ -13,8 +13,8 @@ Students never see `admin.html` linked from anywhere. Go to `/admin.html` direct
 
 1. **Sign in.** Team name (or room number) + optional member names, stored in `localStorage`.
 2. **Brief.** The team name deterministically picks one of five briefs (museum piece, retail try-on, kids' game, outdoor wayfinding, low-vision accessibility tour) — same hash-based assignment as the Model Lab activities, so every room gets a different scenario without needing a lookup table.
-3. **Round 1.** A hard 6.7ms budget (16.7ms at 60fps, minus ~10ms already spent by camera capture, VIO and tracking before the team's own code runs — the same number the lecture deck uses). Five categories — grounding, lighting, audio, legibility, rendering — each with a `min`/`max` pick requirement. The team must justify its spend in one sentence.
-4. **The throttle.** On locking Round 1, the team is told the phone has been running long enough to hit the thermal cliff. The new budget is **smaller and brief-specific** — an outdoor, continuous-use brief throttles harder (down to 3.5ms) than an indoor, short-burst one (down to 5.6ms). This is itself part of the lesson: the brief decided how bad the squeeze would be before anyone picked a single feature.
+3. **Target frame rate, then Round 1.** The team first picks a target — 30fps, 60fps, or a 90fps headset-style comparison — and their Round 1 budget is computed live: 1000/fps, minus the ~10ms already spent by camera capture, VIO and tracking before the team's own code runs. 60fps gives the tuned 6.7ms every option on the sheet was calibrated against; 30fps gives roughly 3x that (23.3ms), which removes most of the spending tension — that trade-off, steadiness versus headroom, is itself the point, not a shortcut around the exercise. Five categories — grounding, lighting, audio, legibility, rendering — each with a `min`/`max` pick requirement. The team must justify its spend in one sentence.
+4. **The throttle.** On locking Round 1, the team is told the phone has been running long enough to hit the thermal cliff. The new budget is **smaller and brief-specific**, computed as their own Round 1 budget times a fixed per-brief ratio (an outdoor, continuous-use brief keeps only ~52% of whatever budget they had; an indoor, short-burst one keeps ~84%). This is itself part of the lesson: the brief decided how bad the squeeze would be before anyone picked a single feature, or a frame rate.
 5. **Round 2.** The team renegotiates under the new cap — keep, swap or cut anything from Round 1 — and answers whether the cut was predictable from the brief.
 6. **Done.** A one-sentence, auto-generated summary ("Brief: X. Round 1 spent Yms... after the throttle we cut Z...") with a copy-to-clipboard button for pasting into chat.
 
@@ -72,7 +72,7 @@ Rough shape of a 20–25 minute slot:
 
 | Time | What |
 |---|---|
-| 0:00–0:02 | Share the link in chat. Read the Round 1 rule aloud (6.7ms, five categories) |
+| 0:00–0:02 | Share the link in chat. Read the rule aloud: pick a frame rate, the budget is computed from it, five categories |
 | 0:02–0:12 | Breakout rooms, Round 1. Assign a **named reporter** per room before you open them |
 | 0:12–0:14 | Back in the main room. Do **not** explain anything yet — just say "lock in, then wait" |
 | 0:14–0:15 | Everyone reads the throttle reveal together — this moment is the whole point, don't let a fast room skip ahead of it alone if you want it to land as a shared beat |
@@ -87,7 +87,7 @@ One submission per team, enforced in `localStorage`. A team that genuinely needs
 
 ## Retuning the content
 
-`data/frame-data.js` is plain data — no logic — so the activity can be rebalanced without touching application code: the five briefs, the round-2 throttle caps, and the cost/category table for all 20 options. **If you change any `ms` value or add/remove an option, update the matching copy in `functions/api/frame-results.js` too** — the server never reads the client data file, by design, so the two must be kept in sync by hand (same convention as the Model Lab's budget activity).
+`data/frame-data.js` is plain data — no logic — so the activity can be rebalanced without touching application code: the fps tiers, the five briefs' throttle ratios, and the cost/category table for all 20 options. **If you change any `ms` value, a throttle ratio, or add/remove an option, update the matching copy in `functions/api/frame-results.js` too** — the server never reads the client data file, by design, so the two must be kept in sync by hand (same convention as the Model Lab's budget activity).
 
 ## Privacy
 

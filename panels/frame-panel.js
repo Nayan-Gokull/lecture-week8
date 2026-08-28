@@ -82,29 +82,65 @@
         '<p>' + esc(hrtfTeams.join(", ")) + '. Worth asking on the spot: what happens to your experience for the customer who has no headphones in?</p></div>';
     }
 
+    /* ---- frame rate choice, and the specific case worth naming ----
+       30fps genuinely removes almost all budget tension (even every
+       option maxed out across every category totals well under a
+       30fps budget), so the choice ITSELF is the thing worth probing,
+       not the spend that follows it. Motion-heavy briefs (kids, way-
+       finding) are the ones where 30fps has a real, visible cost. */
+    var fpsCounts = {};
+    runs.forEach(function (r) { fpsCounts[r.targetFps] = (fpsCounts[r.targetFps] || 0) + 1; });
+    var fpsOrder = [30, 60, 90].filter(function (f) { return fpsCounts[f]; });
+    if (fpsOrder.length) {
+      html += '<div class="card"><div class="hd"><h2>Target frame rate chosen</h2></div><div class="casedist">';
+      fpsOrder.forEach(function (f) {
+        var n = fpsCounts[f], w = total ? (n / total) * 100 : 0;
+        html += '<div class="distrow"><span class="dl">' + f + ' fps</span>' +
+          '<span class="dbar"><i class="ok" style="width:' + w.toFixed(1) + '%"></i></span>' +
+          '<span class="dn">' + n + '</span></div>';
+      });
+      html += '</div></div>';
+    }
+
+    var motionBriefs = { kids: 1, wayfinding: 1 };
+    var coastedOn30 = runs.filter(function (r) {
+      return r.targetFps === 30 && motionBriefs[r.brief];
+    }).map(function (r) { return r.team + " (" + briefTitle(r.brief) + ")"; });
+    if (coastedOn30.length) {
+      html += '<div class="callout gold"><b>' + coastedOn30.length + ' room' + (coastedOn30.length === 1 ? "" : "s") +
+        ' picked 30fps for a motion-heavy brief.</b>' +
+        '<p>' + esc(coastedOn30.join(", ")) + '. That is a defensible choice, but ask them to justify it out loud: a kids game or a walking wayfinding overlay is exactly where a lurching frame rate is most noticeable. If they cannot defend it, that is the finding.</p></div>';
+    }
+
     /* ---- per-brief breakdown ---- */
     var byBrief = {};
     runs.forEach(function (r) {
       (byBrief[r.brief] = byBrief[r.brief] || []).push(r);
     });
-    html += '<div class="card"><div class="hd"><h2>By brief</h2><span class="side">harsher throttle on the left</span></div>' +
-      '<div class="tablewrap"><table class="dtl"><thead><tr><th>Brief</th><th class="num">Round 2 cap</th>' +
-      '<th class="num">Rooms</th><th class="num">Future-proofed</th><th class="num">Avg Round 1</th><th class="num">Avg Round 2</th></tr></thead><tbody>';
+    html += '<div class="card"><div class="hd"><h2>By brief</h2><span class="side">harshest throttle RATIO on the left — actual cap depends on fps chosen</span></div>' +
+      '<div class="tablewrap"><table class="dtl"><thead><tr><th>Brief</th><th class="num">Throttle keeps</th>' +
+      '<th class="num">Rooms</th><th class="num">Future-proofed</th><th class="num">Avg Round 1</th><th class="num">Avg Round 2</th><th>Round 2 cap seen</th></tr></thead><tbody>';
     Object.keys(byBrief).sort(function (a, b) {
-      return ((BRIEFS[a] && BRIEFS[a].round2Cap) || 9) - ((BRIEFS[b] && BRIEFS[b].round2Cap) || 9);
+      return ((BRIEFS[a] && BRIEFS[a].throttleRatio) || 1) - ((BRIEFS[b] && BRIEFS[b].throttleRatio) || 1);
     }).forEach(function (bid) {
       var rs = byBrief[bid];
       var avgR1 = rs.reduce(function (s, r) { return s + r.round1.ms; }, 0) / rs.length;
       var avgR2 = rs.reduce(function (s, r) { return s + r.round2.ms; }, 0) / rs.length;
       var fpN = rs.filter(function (r) { return r.futureProofed; }).length;
+      var caps = rs.map(function (r) { return r.round2.cap; });
+      var capMin = Math.min.apply(null, caps), capMax = Math.max.apply(null, caps);
+      var capTxt = capMin === capMax ? capMin.toFixed(1) + " ms" : capMin.toFixed(1) + "–" + capMax.toFixed(1) + " ms";
+      var ratioPct = BRIEFS[bid] ? Math.round(BRIEFS[bid].throttleRatio * 100) : "?";
       html += '<tr><td class="team">' + esc(briefTitle(bid)) + '</td>' +
-        '<td class="num">' + ((BRIEFS[bid] && BRIEFS[bid].round2Cap.toFixed(1)) || "?") + ' ms</td>' +
+        '<td class="num">' + ratioPct + '%</td>' +
         '<td class="num">' + rs.length + '</td>' +
         '<td class="num">' + fpN + ' / ' + rs.length + '</td>' +
         '<td class="num">' + avgR1.toFixed(1) + ' ms</td>' +
-        '<td class="num">' + avgR2.toFixed(1) + ' ms</td></tr>';
+        '<td class="num">' + avgR2.toFixed(1) + ' ms</td>' +
+        '<td>' + capTxt + '</td></tr>';
     });
-    html += '</tbody></table></div></div>';
+    html += '</tbody></table></div>' +
+      '<p class="fine">Throttle keeps is the fixed per-brief ratio (this is what “harsher” actually ranks by). The Round 2 cap in ms depends on the fps each room chose, so it varies within a brief — shown as the range actually seen.</p></div>';
 
     /* ---- what got cut, frequency ---- */
     var cutFreq = {};
@@ -125,13 +161,14 @@
 
     /* ---- per-team table ---- */
     html += '<div class="card"><div class="hd"><h2>Teams</h2></div><div class="tablewrap">' +
-      '<table class="dtl"><thead><tr><th>Team</th><th>Brief</th><th class="num">R1</th><th class="num">R2 cap</th>' +
+      '<table class="dtl"><thead><tr><th>Team</th><th>Brief</th><th class="num">fps</th><th class="num">R1</th><th class="num">R2 cap</th>' +
       '<th class="num">R2</th><th>Status</th><th>Cut</th><th>Planned ahead?</th><th>Note</th><th>When</th></tr></thead><tbody>';
 
     runs.forEach(function (r) {
       var cutTxt = (r.cutList || []).map(optLabel).join(", ") || "&mdash;";
       html += '<tr><td class="team">' + esc(r.team) + '</td>' +
         '<td>' + esc(briefTitle(r.brief)) + '</td>' +
+        '<td class="num">' + (r.targetFps || "?") + '</td>' +
         '<td class="num' + (r.round1.overBudget ? " over" : "") + '">' + r.round1.ms.toFixed(1) + '</td>' +
         '<td class="num">' + r.round2.cap.toFixed(1) + '</td>' +
         '<td class="num' + (r.round2.overBudget ? " over" : "") + '">' + r.round2.ms.toFixed(1) + '</td>' +
@@ -149,13 +186,13 @@
 
   function csv(runs) {
     var maps = labelMaps();
-    var rows = [["team", "members", "when", "brief", "round1_ms", "round1_valid",
+    var rows = [["team", "members", "when", "brief", "target_fps", "round1_cap", "round1_ms", "round1_valid",
                  "round2_cap", "round2_ms", "round2_valid", "future_proofed",
                  "cut", "added", "planned_ahead", "note", "round1_justification"]];
     runs.forEach(function (r) {
       rows.push([
         r.team, r.members || "", ML.stamp(r.ts), (maps.briefs[r.brief] && maps.briefs[r.brief].title) || r.brief,
-        r.round1.ms, r.round1.valid ? "yes" : "no",
+        r.targetFps || "", r.round1.cap, r.round1.ms, r.round1.valid ? "yes" : "no",
         r.round2.cap, r.round2.ms, r.round2.valid ? "yes" : "no",
         r.futureProofed ? "yes" : "no",
         (r.cutList || []).join(" | "), (r.addedList || []).join(" | "),

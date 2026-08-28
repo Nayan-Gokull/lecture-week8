@@ -21,7 +21,40 @@
    the squeeze would be before anyone picked a single feature.
    ============================================================ */
 
-window.FRAME_ROUND1_CAP = 6.7;
+/* Target frame rate is now a real first decision, not a fixed given.
+   Round 1's cap is derived the same way regardless of which target a
+   team picks: 1000/fps is the total frame time, minus the ~10ms that
+   camera capture, VIO and image tracking already spend before a
+   single line of the team's own code runs. That 10ms figure does not
+   shrink just because you asked for fewer frames per second — the
+   tracking pipeline runs at its own cadence — so a lower fps target
+   genuinely does buy more discretionary budget, not a smaller total
+   pie split the same way.
+
+   30fps is a real, defensible handheld choice — the deck's own
+   frame-rate slide teaches that a steady 30 beats a lurching 45-60,
+   and this is exactly that trade-off made concrete: roughly 3x the
+   discretionary budget, in exchange for a visibly less smooth result.
+   60fps is the ARKit/ARCore ceiling for ordinary handheld AR, and the
+   number every option on this sheet was actually tuned against. 90fps
+   is a headset-style target (see the deck's passthrough-headset row)
+   included so a team can try it against a handheld brief and feel
+   directly why headsets need a completely different pipeline — it is
+   not disabled, because the point lands harder if they choose it and
+   watch the budget nearly vanish, rather than being told no. */
+window.FRAME_FPS_OPTIONS = [
+  { fps: 30, label: "30 fps", tag: "Steady and forgiving",
+    note: "A stable 30 reads as intentional. Roughly 3x the discretionary budget of 60fps, at the cost of visible smoothness." },
+  { fps: 60, label: "60 fps", tag: "The handheld standard",
+    note: "The ceiling ARKit and ARCore actually run at. Every cost on this sheet was tuned against this budget." },
+  { fps: 90, label: "90 fps", tag: "Headset-style target",
+    note: "Not a realistic target for a handheld brief — pick it to see exactly why headsets need a different pipeline." },
+];
+
+function capForFps(fps){
+  return Math.round(((1000 / fps) - 10) * 10) / 10;
+}
+window.FRAME_CAP_FOR_FPS = capForFps;
 
 window.FRAME_CATEGORIES = [
   { id: "ground",     label: "Grounding & occlusion", min: 1, max: 2 },
@@ -129,40 +162,47 @@ window.FRAME_OPTIONS = [
     note: "Best fidelity available. The heaviest single line item on this list.", ms: 1.5 },
 ];
 
+/* throttleRatio replaces a fixed round2Cap so the same per-brief
+   throttle severity generalises to whichever fps a team picked:
+   round2Cap = round1Cap (from their chosen fps) * throttleRatio.
+   The ratios below are exactly the original hand-tuned round2Cap
+   values, expressed as a fraction of the 6.7ms baseline they were
+   tuned against — so nothing about the calibration changed, it was
+   only made to generalise. */
 window.FRAME_BRIEFS = [
   {
     id: "museum",
     title: "Museum piece",
     scenario: "An artefact sits on a plinth. Visitors walk slowly around it for roughly ninety seconds each, all day, on a device the museum owns and hands between them.",
     throttleLine: "It is 3pm. The display has been running back-to-back ninety-second visits since the doors opened at nine.",
-    round2Cap: 5.2,
+    throttleRatio: 0.776,  // was 5.2ms at the tuned 6.7ms/60fps baseline
   },
   {
     id: "retail",
     title: "Retail try-on",
     scenario: "A customer holds a phone up to their own wrist to see a watch. Sessions are short, thirty to sixty seconds, repeated across a busy afternoon in an air-conditioned shop.",
     throttleLine: "The till queue is long. The same phone has been handed between forty customers this afternoon — but the shop is air-conditioned.",
-    round2Cap: 5.6,
+    throttleRatio: 0.836,  // was 5.6ms at the tuned 6.7ms/60fps baseline
   },
   {
     id: "kids",
     title: "Kids' game",
     scenario: "A creature runs across a child's living room floor. One continuous session, no breaks, played for around twenty minutes at a time.",
     throttleLine: "Twenty minutes in, same session, no break — and small warm hands have been wrapped around the phone the whole time.",
-    round2Cap: 3.8,
+    throttleRatio: 0.567,  // was 3.8ms at the tuned 6.7ms/60fps baseline
   },
   {
     id: "wayfinding",
     title: "Outdoor wayfinding",
     scenario: "Arrows are overlaid on a real street to guide someone walking. Direct sunlight, GPS running continuously, fifteen minutes or more per journey.",
     throttleLine: "Fifteen minutes of direct sun, GPS on the whole time, screen brightness maxed out to fight the glare.",
-    round2Cap: 3.5,
+    throttleRatio: 0.522,  // was 3.5ms at the tuned 6.7ms/60fps baseline
   },
   {
     id: "accessibility",
     title: "Low-vision accessibility tour",
     scenario: "The same kind of tour content as the museum brief, but the user is stationary for longer, reading text-heavy labels, and needs the screen genuinely bright to see them.",
     throttleLine: "Forty minutes in — screen brightness has been turned up for legibility the entire time, and nobody has put the phone down.",
-    round2Cap: 4.5,
+    throttleRatio: 0.672,  // was 4.5ms at the tuned 6.7ms/60fps baseline
   },
 ];

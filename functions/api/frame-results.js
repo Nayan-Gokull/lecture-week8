@@ -23,7 +23,10 @@
 
 const PREFIX = "frame:";
 
-const ROUND1_CAP = 6.7;
+const ALLOWED_FPS = [30, 60, 90];
+function capForFps(fps){
+  return Math.round(((1000 / fps) - 10) * 10) / 10;
+}
 
 const CATEGORIES = {
   ground:     { min: 1, max: 2 },
@@ -61,12 +64,12 @@ const OPTIONS = {
   r_hero:  { ms: 1.5, category: "render" },
 };
 
-const BRIEF_CAPS = {
-  museum:        5.2,
-  retail:        5.6,
-  kids:          3.8,
-  wayfinding:    3.5,
-  accessibility: 4.5,
+const BRIEF_THROTTLE_RATIO = {
+  museum:        0.776,
+  retail:        0.836,
+  kids:          0.567,
+  wayfinding:    0.522,
+  accessibility: 0.672,
 };
 
 const json = (obj, status = 200) =>
@@ -117,15 +120,22 @@ export async function onRequestPost({ request, env }) {
     return json({ error: "team required" }, 400);
 
   const briefId = str(data.brief, 40);
-  const round2Cap = BRIEF_CAPS[briefId];
-  if (!round2Cap) return json({ error: "unrecognised brief" }, 400);
+  const ratio = BRIEF_THROTTLE_RATIO[briefId];
+  if (!ratio) return json({ error: "unrecognised brief" }, 400);
+
+  const targetFps = Number(data.targetFps);
+  if (ALLOWED_FPS.indexOf(targetFps) === -1)
+    return json({ error: "unrecognised target frame rate" }, 400);
+
+  const round1Cap = capForFps(targetFps);
+  const round2Cap = Math.round(round1Cap * ratio * 10) / 10;
 
   const r1picks = cleanPicks(data.round1 && data.round1.picks);
   const r2picks = cleanPicks(data.round2 && data.round2.picks);
   if (!r1picks.length || !r2picks.length)
     return json({ error: "picks required for both rounds" }, 400);
 
-  const round1 = scoreRound(r1picks, ROUND1_CAP);
+  const round1 = scoreRound(r1picks, round1Cap);
   const round2 = scoreRound(r2picks, round2Cap);
 
   const cutList   = r1picks.filter((id) => r2picks.indexOf(id) === -1);
@@ -142,7 +152,8 @@ export async function onRequestPost({ request, env }) {
     team: str(data.team, 60),
     members: str(data.members, 200),
     brief: briefId,
-    round1: { ...round1, cap: ROUND1_CAP, justification: str(data.round1 && data.round1.justification, 240) },
+    targetFps,
+    round1: { ...round1, cap: round1Cap, justification: str(data.round1 && data.round1.justification, 240) },
     round2: { ...round2, cap: round2Cap, plannedAhead: plan, note: str(data.round2 && data.round2.note, 240) },
     cutList, addedList, futureProofed,
     ua: str(data.ua, 200),
