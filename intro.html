@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Ship It — Start Here — INTE 42312</title>
+<meta name="description" content="The end-to-end AR pipeline: read the brief, decide your platform and features, then source, build, and ship it." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+<link rel="stylesheet" href="lab.css" />
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero-banner">
+    <span class="hero-mark">
+      <svg viewBox="0 0 24 24" fill="none">
+        <path d="M12 3v18M5 7h14M7 7l-3 6a3.2 3.2 0 0 0 6 0zM17 7l-3 6a3.2 3.2 0 0 0 6 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </span>
+    <span class="hero-text">
+      <span class="hero-title">Ship It</span>
+      <span class="hero-sub">An end-to-end AR build, start to finish</span>
+    </span>
+  </div>
+
+  <!-- ============ TEAM SIGN-IN ============ -->
+  <main class="main-stage">
+  <section id="signin">
+    <div class="card narrow">
+      <h1>Read it. Decide it. Build it. Ship it.</h1>
+      <p class="lead">One continuous pipeline, one brief, one team. About 35&ndash;40 minutes, in breakout rooms throughout.</p>
+
+      <div class="field">
+        <label for="team">Team name or breakout room number</label>
+        <input class="input" id="team" maxlength="60" autocomplete="off" placeholder="e.g. Room 4, or The Normals" />
+      </div>
+
+      <button type="button" class="link-toggle" id="memToggle">+ Add who is in the room</button>
+      <div class="field" id="memField" hidden>
+        <label for="members">Names, separated by commas</label>
+        <input class="input" id="members" maxlength="200" autocomplete="off" placeholder="Ayesha, Ben, Chidi, Dan" />
+      </div>
+
+      <div class="btnrow">
+        <button class="btn primary" id="go">Start &rarr;</button>
+      </div>
+      <p class="fine">One submission per team, at the very end. Every room gets a different brief, decided by your team name.</p>
+    </div>
+  </section>
+
+  <!-- ============ BRIEF ============ -->
+  <section id="brief" hidden>
+    <div class="tl-wrap" id="timeline"></div>
+    <div class="teamid">
+      <span class="who" id="whoName"></span><span class="mem" id="whoMem"></span>
+    </div>
+
+    <div class="card">
+      <h1>Your brief</h1>
+      <div class="brief-scenario">
+        <span class="tag" id="briefTag"></span>
+        <p id="briefText"></p>
+      </div>
+
+      <div class="callout gold">
+        <b>The shape of the whole thing.</b>
+        <p>Read your brief, say your first thoughts, decide a platform and which features it needs. Then source a hero asset under a real licence, build the scene around it, add audio, and ship the whole thing under a real per-frame budget. One team, one build, straight through.</p>
+      </div>
+
+      <div class="btnrow">
+        <button class="btn primary" id="toDiscuss">First thoughts &rarr;</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ DISCUSS ============ -->
+  <section id="discuss" hidden>
+    <div class="tl-wrap" id="timeline2"></div>
+    <div class="teamid"><span class="who" id="whoName2"></span><span class="mem" id="briefTag2"></span></div>
+
+    <div class="card">
+      <h2>Before you decide anything technical</h2>
+      <p class="lead">No mechanics yet. Just talk to your room for a minute, then write down where you land.</p>
+
+      <div class="field">
+        <label for="discussIn">In one or two sentences: what's the riskiest or most demanding part of this brief?</label>
+        <textarea class="input" id="discussIn" rows="3" maxlength="300" placeholder="e.g. it runs continuously outdoors, so heat and glare are both going to bite us"></textarea>
+      </div>
+
+      <div class="btnrow">
+        <button class="btn primary" id="toPlatform">Next: pick a platform &rarr;</button>
+      </div>
+      <p class="fine" id="discussBlock">Write a sentence before you continue.</p>
+    </div>
+  </section>
+
+  <!-- ============ PLATFORM ============ -->
+  <section id="platform" hidden>
+    <div class="tl-wrap" id="timeline3"></div>
+    <div class="teamid"><span class="who" id="whoName3"></span><span class="mem" id="briefTag3"></span></div>
+
+    <div class="card">
+      <h2>Select a platform</h2>
+      <p class="lead">The layer underneath the track decision you already made this course. Pick the one your brief actually needs.</p>
+      <div class="opts" id="platformOpts"></div>
+
+      <div class="btnrow">
+        <button class="btn primary" id="toFeatures" disabled>Next: select features &rarr;</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FEATURES ============ -->
+  <section id="features" hidden>
+    <div class="tl-wrap" id="timeline4"></div>
+    <div class="teamid"><span class="who" id="whoName4"></span><span class="mem" id="briefTag4"></span></div>
+
+    <div class="card">
+      <h2>Predict your features</h2>
+      <p class="lead">Before you see any cost numbers: which of these do you think your finished build will actually need? This is a prediction, not a commitment &mdash; you'll see how it held up later.</p>
+      <div class="opts" id="featureOpts"></div>
+
+      <div class="btnrow">
+        <button class="btn primary" id="toSource">Next: source the asset &rarr;</button>
+      </div>
+      <p class="fine">Pick yes or no for all four before you continue.</p>
+    </div>
+  </section>
+  </main>
+</div>
+
+<script src="common.js"></script>
+<script src="data/frame-data.js"></script>
+<script>
+(function(){
+  "use strict";
+  const { $, $$, esc, toast, show, bindPress, renderTimeline,
+          getIdentity, setIdentity, pickBrief, getPipe, setPipe } = ML;
+
+  const BRIEFS = window.FRAME_BRIEFS || [];
+  const PLATFORMS = window.AR_PLATFORMS || [];
+  const CATEGORIES = window.FRAME_CATEGORIES || [];
+
+  const params = new URLSearchParams(location.search);
+  if (params.get("demo") === "1" && !getIdentity()) setIdentity("Demo Room", "rehearsal");
+
+  let me = getIdentity();
+  let BRIEF = null;
+  let platformPick = null;
+  let features = {};   // { ground: true/false, light: ..., audio: ..., legibility: ... }
+
+  function paintWho(){
+    ["whoName","whoName2","whoName3","whoName4"].forEach(id => { const el = $("#"+id); if (el) el.textContent = me.team; });
+    $("#whoMem").textContent = me.members ? "· " + me.members : "";
+  }
+
+  function paintTimelines(id){
+    ["timeline","timeline2","timeline3","timeline4"].forEach(t => {
+      const el = $("#"+t); if (el) renderTimeline(el, id);
+    });
+  }
+
+  $("#memToggle").addEventListener("click", () => {
+    const f = $("#memField"); f.hidden = !f.hidden; if (!f.hidden) $("#members").focus();
+  });
+
+  $("#go").addEventListener("click", () => {
+    const team = $("#team").value.trim();
+    if (!team){ toast("Give your team a name first", true); $("#team").focus(); return; }
+    me = setIdentity(team, $("#members").value);
+    boot();
+  });
+  $("#team").addEventListener("keydown", e => { if (e.key === "Enter") $("#go").click(); });
+
+  $("#toDiscuss").addEventListener("click", () => { paintTimelines("discuss"); show("discuss"); });
+
+  $("#toPlatform").addEventListener("click", () => {
+    const v = $("#discussIn").value.trim();
+    if (!v){ toast("Write a sentence first", true); $("#discussIn").focus(); return; }
+    setPipe(me.team, { intro: Object.assign({}, getPipe(me.team).intro, { discuss: v }) });
+    paintTimelines("platform");
+    show("platform");
+  });
+
+  function paintPlatformOpts(){
+    $("#platformOpts").innerHTML = PLATFORMS.map(p =>
+      '<button type="button" class="opt" data-id="' + esc(p.id) + '" aria-pressed="false">' +
+        '<span class="ttl">' + esc(p.label) + ' &mdash; ' + esc(p.tag) + '</span>' +
+        '<span class="sub">' + esc(p.note) + '</span></button>').join("");
+    bindPress($("#platformOpts"));
+  }
+  $("#platformOpts").addEventListener("click", e => {
+    const b = e.target.closest(".opt");
+    if (!b) return;
+    platformPick = b.dataset.id;
+    $$("#platformOpts .opt").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+    $("#toFeatures").disabled = false;
+  });
+
+  $("#toFeatures").addEventListener("click", () => {
+    setPipe(me.team, { intro: Object.assign({}, getPipe(me.team).intro, { platform: platformPick }) });
+    paintTimelines("features");
+    show("features");
+  });
+
+  function paintFeatureOpts(){
+    features = {};
+    $("#featureOpts").innerHTML = CATEGORIES.map(c =>
+      '<div class="catname">' + esc(c.label) + '</div>' +
+      '<div class="opts row" data-cat="' + c.id + '">' +
+        '<button type="button" class="opt" data-v="yes" aria-pressed="false"><span class="ttl">Yes, we\'ll need this</span></button>' +
+        '<button type="button" class="opt" data-v="no" aria-pressed="false"><span class="ttl">No, skip it</span></button>' +
+      '</div>').join("");
+    bindPress($("#featureOpts"));
+  }
+  $("#featureOpts").addEventListener("click", e => {
+    const b = e.target.closest(".opt");
+    if (!b) return;
+    const group = b.closest("[data-cat]");
+    const cat = group.dataset.cat;
+    features[cat] = b.dataset.v === "yes";
+    $$(".opt", group).forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+  });
+
+  $("#toSource").addEventListener("click", () => {
+    if (Object.keys(features).length < CATEGORIES.length){ toast("Pick yes or no for every feature", true); return; }
+    setPipe(me.team, { intro: Object.assign({}, getPipe(me.team).intro, { features: features }) });
+    location.href = "source.html";
+  });
+
+  function boot(){
+    if (!me){ show("signin"); return; }
+    paintWho();
+    BRIEF = pickBrief(me.team, BRIEFS);
+    $("#briefTag").textContent = BRIEF.title;
+    $("#briefText").textContent = BRIEF.scenario;
+    $("#briefTag2").textContent = BRIEF.title;
+    $("#briefTag3").textContent = BRIEF.title;
+    $("#briefTag4").textContent = BRIEF.title;
+    paintPlatformOpts();
+    paintFeatureOpts();
+    $("#toFeatures").disabled = true;
+
+    // a team that already finished intro for this identity and comes
+    // back here should carry on to source.html, not redo it and risk
+    // a different platform/feature prediction than what they already
+    // built stage 2/3 against
+    if (getPipe(me.team).intro && getPipe(me.team).intro.features){
+      location.href = "source.html";
+      return;
+    }
+    paintTimelines("brief");
+    show("brief");
+  }
+
+  if (me) boot(); else show("signin");
+})();
+</script>
+</body>
+</html>

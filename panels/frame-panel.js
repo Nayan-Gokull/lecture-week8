@@ -79,6 +79,25 @@
     });
     html += '</div></div>';
 
+    /* ---- pre-production: platform choice + prediction accuracy ----
+       Recorded, not scored — there is no "right" platform. Worth
+       naming anyway: it is where a native-app team should have named
+       real store-listing obligations later, in Legal Notices. */
+    var PLATFORM_LABEL = { webar: "Handheld WebAR", native: "Native ARKit / ARCore" };
+    var platformCounts = { webar: 0, native: 0 };
+    var withIntro = runs.filter(function (r) { return r.intro && r.intro.platform; });
+    withIntro.forEach(function (r) { if (platformCounts[r.intro.platform] !== undefined) platformCounts[r.intro.platform]++; });
+    if (withIntro.length) {
+      html += '<div class="card"><div class="hd"><h2>Platform selected</h2></div><div class="casedist">';
+      ["webar", "native"].forEach(function (k) {
+        var n = platformCounts[k], w = withIntro.length ? (n / withIntro.length) * 100 : 0;
+        html += '<div class="distrow"><span class="dl">' + esc(PLATFORM_LABEL[k]) + '</span>' +
+          '<span class="dbar"><i class="ok" style="width:' + w.toFixed(1) + '%"></i></span>' +
+          '<span class="dn">' + n + '</span></div>';
+      });
+      html += '</div></div>';
+    }
+
     var indefensibleCheap = runs.filter(function (r) {
       return r.source && r.source.pick === "cheap" && r.source.outcome === "hard-to-defend";
     }).map(function (r) { return r.team; });

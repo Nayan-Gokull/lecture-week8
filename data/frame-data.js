@@ -56,6 +56,21 @@ function capForFps(fps){
 }
 window.FRAME_CAP_FOR_FPS = capForFps;
 
+/* Stage: Select Platform (intro.html). AR only, on purpose — this
+   activity closes out the AR unit, not the VR one, so the choice is
+   the same handheld-vs-native ladder the deck's own Platform
+   Selection slide teaches, not a third headset option. Recorded and
+   carried into stage 3's Legal Notices step (a native app needs
+   store-listing/app-permission disclosures a web link does not) — it
+   deliberately does not change the frame-budget arithmetic, so the
+   already-audited numeric balance of this activity stays untouched. */
+window.AR_PLATFORMS = [
+  { id: "webar", label: "Handheld WebAR", tag: "Ships as a link",
+    note: "No install, no app store, works on any phone with a browser. The track this course actually built on." },
+  { id: "native", label: "Native ARKit / ARCore", tag: "An installed app",
+    note: "Access to more of the platform (real depth APIs, persistent anchors) in exchange for a Mac/Xcode or Android Studio toolchain and an app-store listing." },
+];
+
 window.FRAME_CATEGORIES = [
   { id: "ground",     label: "Grounding & occlusion", min: 1, max: 2 },
   { id: "light",      label: "Lighting",               min: 1, max: 2 },

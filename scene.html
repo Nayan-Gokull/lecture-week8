@@ -22,7 +22,7 @@
     </span>
     <span class="hero-text">
       <span class="hero-title">Ship It</span>
-      <span class="hero-sub">Stage 2 of 3 &middot; Build the scene</span>
+      <span class="hero-sub">Build the scene</span>
     </span>
   </div>
 
@@ -30,6 +30,7 @@
 
     <!-- ============ BRIEF ============ -->
     <section id="brief">
+      <div class="tl-wrap" id="timeline"></div>
       <div class="teamid">
         <span class="who" id="whoName"></span><span class="mem" id="whoMem"></span>
       </div>
@@ -69,6 +70,7 @@
 
     <!-- ============ BUILD ============ -->
     <section id="build" hidden>
+      <div class="tl-wrap" id="timeline2"></div>
       <div class="teamid">
         <span class="who" id="whoName2"></span><span class="mem" id="pickCount"></span>
       </div>
@@ -109,6 +111,7 @@
 
     <!-- ============ REASON ============ -->
     <section id="reason" hidden>
+      <div class="tl-wrap" id="timeline3"></div>
       <div class="teamid"><span class="who" id="whoName3"></span><span class="mem">Last step</span></div>
       <div class="card">
         <h2>Which lever did you pull, and what did you give up?</h2>
@@ -143,7 +146,7 @@
 <script>
 (function(){
   "use strict";
-  const { $, $$, esc, toast, show, fmtInt, clamp, bindPress,
+  const { $, $$, esc, toast, show, fmtInt, clamp, bindPress, renderTimeline,
           getIdentity, pickBrief, getPipe, setPipe } = ML;
 
   const BRIEFS = window.FRAME_BRIEFS || [];
@@ -159,7 +162,7 @@
   const CAT_LABEL = { setting: "Setting piece", decor: "Supporting decor", interface: "Interface element" };
 
   const me = getIdentity();
-  if (!me){ location.replace("source.html"); return; }
+  if (!me){ location.replace("intro.html"); return; }
 
   const pipe = getPipe(me.team);
   if (!pipe.source){ location.replace("source.html"); return; }
@@ -169,6 +172,7 @@
 
   ["whoName","whoName2","whoName3","whoName4"].forEach(id => { const el = $("#"+id); if (el) el.textContent = me.team; });
   $("#whoMem").textContent = me.members ? "· " + me.members : "";
+  ["timeline","timeline2","timeline3"].forEach(id => { const el = $("#"+id); if (el) renderTimeline(el, "build"); });
   $("#briefTag").textContent = BRIEF.title;
   $("#briefText").textContent = BRIEF.scenario;
   $("#heroSummary").textContent = pipe.source.caseTitle + " (" + pipe.source.licence + ") — " +

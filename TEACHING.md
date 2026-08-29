@@ -4,11 +4,19 @@ Not linked anywhere in the student-facing site. `_redirects` sends `/TEACHING.md
 
 ## The one thing to get right
 
-**Do not explain the stage 1 -> stage 2 -> stage 3 links before they happen.** The whole design depends on each stage being a genuine, unhinted commitment. If you preview "by the way, whatever you build in stage 2 becomes your rendering cost in stage 3," you have deleted the exercise — teams will hedge in stage 1 and 2 instead of actually deciding, and each reveal lands as a rule change instead of a consequence.
+**Do not explain the Source -> Build -> Audio/Spend links before they happen.** The whole design depends on each stage being a genuine, unhinted commitment. If you preview "by the way, whatever you build in Build becomes your rendering cost in Spend," you have deleted the exercise — teams will hedge instead of actually deciding, and each reveal lands as a rule change instead of a consequence.
 
-Say only, at the very start: "Three stages. Source an asset, build a scene, then ship it under a real frame budget. What you decide early carries forward — that's all I'm telling you." Let the two reveals (stage 2's "this is what your hero asset costs", stage 3's "this is what your scene costs to render") land as discoveries.
+Say only, at the very start: "Eleven stages, one build, one team. What you decide early carries forward — that's all I'm telling you." Let the two reveals (Build's "this is what your hero asset costs", Audio's "this is what your scene costs to render") land as discoveries. The stage timeline at the top of every page is deliberately safe to look at — the labels never say what happens inside a stage, only its name — so pointing at it and saying "here's the shape of the whole thing" does not spoil anything.
 
-## Stage 1 — sourcing the asset is a real trade, not just a licence quiz
+## Pre-production — Discuss, Platform, Features (on intro.html)
+
+Three quick stages before any mechanics exist, on the same page as sign-in:
+
+- **Discuss** is one or two sentences, no scoring: "what's the riskiest or most demanding part of this brief?" Its only job is to exist so Optimise can quote it back later. Do not let a room skip it with a one-word answer if you can help it — the callback lands better with something real to compare against.
+- **Platform** is AR only, on purpose (handheld WebAR vs native ARKit/ARCore) — the same ladder as the deck's own Platform Selection slide, not a new track decision. It is recorded and resurfaces in Legal Notices (a native app needs an app-store disclosure a web link does not); it deliberately does not touch the frame-budget arithmetic, so the already-audited numeric balance of this activity stays untouched.
+- **Features** is a yes/no prediction across the same four categories Spend uses (grounding, lighting, audio, legibility) — before the room has seen a single millisecond number. This is the one most rooms will treat as a formality; tell them it comes back in Optimise, but not how.
+
+## Stage: sourcing the asset is a real trade, not just a licence quiz — and now a real file, not a description
 
 Three listings, always shippable in some form, so nobody hits a dead end:
 
@@ -18,19 +26,25 @@ Three listings, always shippable in some form, so nobody hits a dead end:
 
 The real strategic choice a sharp team notices is that **the cheapest, best-optimised asset is also the one with the most licence risk** — that is not a coincidence in the fiction, it mirrors why real marketplaces price optimised, well-supported assets under stricter terms. A team that picks cheap and does not write a real attribution (or does not flag the risk out loud) has skipped a licence condition, which the board treats the same as the standalone licence activity does: same as having no licence at all.
 
-## Stage 2 — the hero asset is locked, the room still has real decisions
+Each listing opens a real, self-hosted `.glb` in a live viewer and reads real triangle/draw-call/texture stats straight out of the file — the team is deciding by checking, not by reading a description. Two disclosures are on-screen at all times, so nobody walks away with a false belief: the licence text is fictional, written for this exercise, and is not the file's real licence (real credit is in `models/README.md`); the file itself is a stand-in prop for reading real specs on, not literally the finished object the brief describes.
 
-Whatever a team picked in stage 1 shows up already placed and non-removable. This is deliberate: it removes the "just don't use it" escape hatch and forces the team to build around the consequence of their own stage 1 choice. A team that picked the heavy clean asset has much less headroom for scene props than a team that took the cheap, risky, well-optimised one — **that headroom difference is stage 1's licence trade-off becoming visible as a real cost**, not a separate lesson.
+## Build — the hero asset is locked, the room still has real decisions
+
+Whatever a team picked in Source shows up already placed and non-removable. This is deliberate: it removes the "just don't use it" escape hatch and forces the team to build around the consequence of their own Source choice. A team that picked the heavy clean asset has much less headroom for scene props than a team that took the cheap, risky, well-optimised one — **that headroom difference is Source's licence trade-off becoming visible as a real cost**, not a separate lesson.
 
 The scene mechanic repeats the Model Lab Budget Table's own trap at a smaller scale on purpose — a team meets "draw calls and texture memory break a scene before triangle count does" twice across the two activities, which is what makes it stick:
 - **Prop Cluster** (raw) is cheap in triangles but carries 14 materials — the potted-plant trap again.
 - **Environment Backdrop Panel** is almost flat geometry holding an 18MB texture — the rug trap again.
 
-## Stage 3 — rendering is no longer a free pick, it is what stage 2 cost
+## Audio gets its own screen now
 
-The old "Rendering & assets" picklist (LOD / atlas / hi-res / hero) is gone. In its place is a single locked line, sized to whatever stage 2's scene actually costs: `0.05 + draws*0.018 + textureMB*0.012` ms, calibrated so the same range (roughly 0.3–1.5ms) the old picklist covered still holds for a typically-built scene. This is the moment the whole pipeline's coupling becomes visible to the team — say nothing about it before they reach the stage 3 brief screen, and let the "locked in from stage 2" callout do the explaining.
+Audio used to be buried inside the same long category list as grounding, lighting and legibility. It is now its own screen, ahead of the rest of the spend, with a running total against the shared budget before the other three categories exist on screen at all — the point is to stop audio quietly losing out to whichever category happens to render first in a long list. It still spends from the exact same pool; only when it is decided changed, not how it is scored. A room cannot go back to this screen once past it, but the audio category's own minimum is zero, so "deselect everything" is always a valid escape if a pick turns out to overspend.
 
-### The frame-rate choice is still the first decision inside stage 3
+## Rendering is no longer a free pick, it is what Build cost
+
+The old "Rendering & assets" picklist (LOD / atlas / hi-res / hero) is gone. In its place is a single locked line, sized to whatever Build's scene actually costs: `0.05 + draws*0.018 + textureMB*0.012` ms, calibrated so the same range (roughly 0.3–1.5ms) the old picklist covered still holds for a typically-built scene. This is the moment the whole pipeline's coupling becomes visible to the team — say nothing about it before they reach Audio's brief recap, and let the "locked in from Build" callout do the explaining.
+
+### The frame-rate choice is still the first decision inside Spend
 
 Teams pick 30, 60 or 90fps, and the budget is computed live: roughly 23.3ms at 30fps, 6.7ms at 60fps, 1.1ms at 90fps.
 
@@ -53,30 +67,35 @@ The throttle severity is also brief-dependent, on purpose — a fixed percentage
 
 | Time | What | Say / do |
 |---|---|---|
-| 0:00 | Open `source.html` | "Three stages: source, build, ship. What you decide early carries forward — that's all I'm telling you." Read the brief aloud. |
-| 0:03 | Breakout, stage 1 | Named reporter per room. Locking in an asset carries it forward automatically — there is no going back. |
-| 0:10 | Breakout, stage 2 | The hero asset is already placed when they open `scene.html`. Do not explain why the caps feel tighter or looser between rooms — that is stage 1 showing up. |
-| 0:20 | Back in main room | Do **not** open the board yet. Just: "Everyone locked in stage 2? Good — open stage 3 together." |
-| 0:22 | The reveal | Let the "locked in from stage 2" callout land in silence for a beat. This is the moment the coupling becomes visible. |
-| 0:24 | Breakout, Round 1 | "Pick your target frame rate, then spend what's left across four categories. Rendering is already decided." |
-| ~0:30 | Back in main room | "Everyone locked in? Advance to the next screen together." |
-| 0:32 | The throttle reveal | Let it happen live, in silence, for a beat. |
-| 0:33 | Breakout, Round 2 | "Keep, swap, or cut — your call." |
+| 0:00 | Open `intro.html` | "Eleven stages, one build, one team. What you decide early carries forward — that's all I'm telling you." Read the brief aloud. |
+| 0:02 | Discuss, Platform, Features | Quick, no mechanics. Push for a real sentence in Discuss — it comes back later. Do not hint at what Platform or Features actually change. |
+| 0:05 | Breakout, Source | Named reporter per room. Locking in an asset carries it forward automatically — there is no going back. |
+| 0:12 | Breakout, Build | The hero asset is already placed when they open `scene.html`. Do not explain why the caps feel tighter or looser between rooms — that is Source showing up. |
+| 0:20 | Back in main room | Do **not** open the board yet. Just: "Everyone locked in Build? Good — open the next stage together." |
+| 0:22 | The reveal | Let the "locked in from Build" callout land in silence for a beat. This is the moment the coupling becomes visible. |
+| 0:24 | Breakout, Audio then Spend | Audio first, its own screen, then grounding/lighting/legibility. "Pick your target frame rate, then spend what's left. Rendering is already decided." |
+| ~0:32 | Back in main room | "Everyone locked in? Advance to the next screen together." |
+| 0:33 | The throttle reveal | Let it happen live, in silence, for a beat. |
+| 0:34 | Breakout, Optimise | "Keep, swap, or cut — your call." Point out the callback card quoting their own Discuss answer back at them. |
+| 0:37 | Legal Notices, then Ship | Quick — this is a check, not new work. |
 | 0:38 | Plenary | Open `admin.html`, hit Refresh. Read the board's callouts aloud in order. |
 
 ## Reading the board
 
-The callouts are ordered stage 1 -> stage 2 -> stage 3, then the plenary payoff:
+The callouts are ordered pre-production -> Source -> Build -> Spend, then the plenary payoff:
 
-1. **Hero asset sourced** — distribution across clean / cheap / commission. If most rooms took the cheap, risky option, that is worth naming before anything else: most of the room accepted licence risk to buy scene headroom.
-2. **Indefensible-cheap-asset flag** — named rooms who took the risky asset without a defensible attribution. Ask them to defend it live, same as the standalone licence activity's trap cases.
-3. **Average rendering cost from Scene Build**, and the share of Round 1's own budget it ate before a single grounding/lighting/audio/legibility pick — this is the number that makes stage 1 and 2's consequences land in stage 3's numbers.
-4. **"X of Y rooms already fit the throttled budget."** Ask a future-proofed room what they protected; ask a caught room what they'd change knowing the throttle was coming.
-5. **"First to go under pressure: [category]."** Genuinely least important for most briefs, or simply the most expensive line on the sheet — different failures.
-6. **Risky-pick flag** ("Nothing" shipped in a mandatory category in the final answer).
-7. **Spatial-audio flag** (HRTF kept despite no brief guaranteeing headphones).
-8. **Target frame rate chosen**, and the named "picked 30fps for a motion-heavy brief" flag.
-9. **By-brief table** — ranked by the fixed throttle ratio; the actual ms cap varies within a brief by fps chosen, shown as a range.
+1. **Platform selected** — a straight distribution. Worth a line if the room split evenly or went almost entirely one way.
+2. **Hero asset sourced** — distribution across clean / cheap / commission. If most rooms took the cheap, risky option, that is worth naming before anything else: most of the room accepted licence risk to buy scene headroom.
+3. **Indefensible-cheap-asset flag** — named rooms who took the risky asset without a defensible attribution. Ask them to defend it live, same as the standalone licence activity's trap cases.
+4. **Average rendering cost from Scene Build**, and the share of Round 1's own budget it ate before a single grounding/lighting/audio/legibility pick — this is the number that makes Source and Build's consequences land in Spend's numbers.
+5. **"X of Y rooms already fit the throttled budget."** Ask a future-proofed room what they protected; ask a caught room what they'd change knowing the throttle was coming.
+6. **"First to go under pressure: [category]."** Genuinely least important for most briefs, or simply the most expensive line on the sheet — different failures.
+7. **Risky-pick flag** ("Nothing" shipped in a mandatory category in the final answer).
+8. **Spatial-audio flag** (HRTF kept despite no brief guaranteeing headphones).
+9. **Target frame rate chosen**, and the named "picked 30fps for a motion-heavy brief" flag.
+10. **By-brief table** — ranked by the fixed throttle ratio; the actual ms cap varies within a brief by fps chosen, shown as a range.
+
+The board does not currently print the Features-prediction-vs-actual comparison or the Discuss quotes — those live in each team's own Optimise screen, read live in the room, not pulled onto the shared board.
 
 ## Answer key — is there a "right" spend?
 
@@ -94,7 +113,7 @@ No, deliberately — but there are defensible and indefensible ones per brief:
 
 ## If a room finishes early
 
-Ask them to defend their Round 2 pick against a brief they didn't get, or ask what they'd have picked in stage 1 if they had known their stage 2 scene ambitions in advance.
+Ask them to defend their Round 2 pick against a brief they didn't get, or ask what they'd have picked in Source if they had known their Build scene ambitions in advance.
 
 ## If a room gets stuck
 

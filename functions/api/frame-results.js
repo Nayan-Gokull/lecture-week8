@@ -32,6 +32,8 @@
 const PREFIX = "frame:";
 
 const ALLOWED_FPS = [30, 60, 90];
+const ALLOWED_PLATFORMS = ["webar", "native"];
+const FEATURE_CATS = ["ground", "light", "audio", "legibility"];
 function capForFps(fps){
   return Math.round(((1000 / fps) - 10) * 10) / 10;
 }
@@ -226,6 +228,26 @@ function scoreScene(data, heroModel){
   };
 }
 
+/* ---------------- Pre-production: discuss / platform / features ----------------
+   Recorded for the board, not scored — there is no "correct" platform
+   or feature prediction, only a real comparison the callback on Round 2
+   already shows the team live. Still sanitised: a bad platform id is
+   dropped rather than stored, and the feature map is rebuilt key by
+   key so nothing but the four known category ids can appear in it. */
+function scoreIntro(data){
+  if (!data) return null;
+  const platform = ALLOWED_PLATFORMS.indexOf(data.platform) !== -1 ? data.platform : "";
+  const features = {};
+  FEATURE_CATS.forEach((k) => {
+    if (data.features && typeof data.features[k] === "boolean") features[k] = data.features[k];
+  });
+  return {
+    discuss: str(data.discuss, 300),
+    platform,
+    features,
+  };
+}
+
 // ---- Team submits ----
 export async function onRequestPost({ request, env }) {
   if (!env.RESULTS) return json({ error: "KV binding RESULTS not configured" }, 500);
@@ -283,8 +305,10 @@ export async function onRequestPost({ request, env }) {
     brief: briefId,
     targetFps,
     source, scene,
+    intro: scoreIntro(data.intro),
     round1: { ...round1, cap: round1Cap, justification: str(data.round1 && data.round1.justification, 240) },
     round2: { ...round2, cap: round2Cap, plannedAhead: plan, note: str(data.round2 && data.round2.note, 240) },
+    legal: { confirmed: !!(data.legal && data.legal.confirmed) },
     cutList, addedList, futureProofed,
     ua: str(data.ua, 200),
     ts: Number(data.ts) || Date.now(),

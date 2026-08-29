@@ -1,49 +1,70 @@
 # Ship It — INTE 42312
 
-One team activity, three stages, one continuous pipeline: licence a hero asset, budget the scene you build it into, then survive a real per-frame budget with it — including whatever that scene costs to render. Built for Zoom breakout rooms, about 35–40 minutes total, produces something the lecturer can put on screen for the plenary.
+One team activity, one continuous pipeline, eleven stages across four pages: read the brief, discuss it, pick a platform and predict your features, licence a hero asset, budget the scene you build it into, add audio, spend a real per-frame budget with it, optimise under a throttle, clear legal notices, then ship. Built for Zoom breakout rooms, about 35–40 minutes total, produces something the lecturer can put on screen for the plenary.
 
-| Page | What it is |
+| Page | Stages inside it |
 |---|---|
-| `source.html` | **Stage 1 — Source the asset.** Team sign-in, brief, three licensed listings for the same hero prop, a real licence verdict |
-| `scene.html` | **Stage 2 — Build the scene.** The hero asset is locked in from stage 1; the team assembles the rest of the scene under triangle / draw call / texture caps |
-| `index.html` | **Stage 3 — Spend the frame.** Target frame rate, Round 1, the throttle, Round 2, done. Rendering cost is no longer picked freely — it is whatever stage 2 built |
-| `admin.html` | Instructor board — one row per team covering all three stages, CSV export |
+| `intro.html` | **Brief → Discuss → Platform → Features.** Team sign-in, the brief, a no-mechanics "first thoughts" write-in, an AR platform choice, and a features prediction — before any numbers exist |
+| `source.html` | **Source.** Three licensed listings for the same hero prop, each one a real self-hosted `.glb` opened in a real 3D viewer with real measured stats, not a text description |
+| `scene.html` | **Build.** The hero asset is locked in from Source; the team assembles the rest of the scene under triangle / draw call / texture caps |
+| `index.html` | **Audio → Spend → Optimise → Legal → Ship.** Audio gets its own screen ahead of the numeric spend; target frame rate, Round 1, the throttle, Round 2 (with a callback to Discuss/Features), a Legal Notices check, then the final submit |
+| `admin.html` | Instructor board — one row per team covering every stage, CSV export |
 
 Students never see `admin.html` linked from anywhere. Go to `/admin.html` directly and bookmark it.
 
-## Why three stages, mechanically coupled
+## Why eleven stages, mechanically coupled
 
-This closes out the AR unit as an end-to-end simulation rather than three separate exercises bolted together. What a team decides in stage 1 is not just a licence verdict — the actual triangle/material/texture cost of the listing they pick becomes their hero asset's real cost in stage 2. What they build in stage 2 is not just a scene — its draw calls and texture footprint becomes the real rendering cost stage 3 has to absorb, alongside grounding, lighting, audio and legibility. Nothing is picked twice, and nothing downstream is free to ignore what happened upstream.
+This closes out the AR unit as an end-to-end simulation rather than a set of exercises bolted together. What a team decides in Source is not just a licence verdict — the real triangle/draw-call/texture cost of the listing they pick becomes their hero asset's real cost in Build. What they build in Build is not just a scene — its draw calls and texture footprint becomes the real rendering cost Spend has to absorb, alongside audio, grounding, lighting and legibility. Optimise calls back to what the room predicted in Discuss and Features, before it had seen a single number. Legal closes the loop Source opened. Nothing is picked twice, and nothing downstream is free to ignore what happened upstream.
+
+A persistent stage timeline (`ML.renderTimeline`, in `common.js`) runs across all four pages so a team always knows where they are in the eleven stages — but every label is deliberately outcome-neutral (`Optimise`, never `Throttle`) so the timeline itself can never spoil a reveal still to come.
 
 ## What the activity actually does
 
-1. **Sign in** (on `source.html`). Team name (or room number) + optional member names, stored in `localStorage`. The team name deterministically picks one of nine briefs (museum piece, retail try-on, kids' game, outdoor wayfinding, low-vision accessibility tour, fitness coaching, warehouse pick-assist, real estate walkthrough, venue wayfinding) — same hash-based assignment used throughout this course's activities, so every room gets a different scenario without a lookup table, and every stage agrees on the same brief for the same team without a server round trip. Nine briefs, not five, so a cohort of up to nine breakout rooms can each land on a genuinely different one.
+1. **Sign in** (on `intro.html`). Team name (or room number) + optional member names, stored in `localStorage`. The team name deterministically picks one of nine briefs — same hash-based assignment used throughout this course's activities, so every room gets a different scenario without a lookup table, and every stage agrees on the same brief for the same team without a server round trip.
 
-2. **Stage 1 — Source the asset.** Three listings for the same hero prop: a **clean, safe, unoptimised** stock scan; a **cheap, pre-optimised, licence-risky** listing (CC BY-NC — the same "graded, public, portfolio" pressure as the Model Lab's own arguable licence cases); and a **commissioned/original** asset with no licence question at all but a mid-range cost. The team picks one, gives it a real verdict (ship as-is / with attribution / only with a change or permission / do not ship), and locks it in. That listing's triangle/material/texture cost is now their hero asset for stage 2 — there is no going back to pick a different one.
+2. **Discuss.** Before any mechanics exist, the room writes one or two sentences on the riskiest or most demanding part of the brief. No scoring — it comes back as a callback in Optimise.
 
-3. **Stage 2 — Build the scene.** The hero asset is placed automatically, non-removable. The team adds a setting piece, 2–4 supporting decor items and one interface element from a small generic prop catalogue, under a shared cap (triangles / draw calls / texture memory) that includes the hero. Same "draw calls and texture memory break a scene before triangle count does" lesson as the Model Lab's Budget Table, met a second time at a smaller scale. Locking in computes the scene's total rendering cost in milliseconds and carries it forward.
+3. **Platform.** AR only: handheld WebAR, or a native ARKit/ARCore app. Recorded, not scored against the frame-budget arithmetic (deliberately — it feeds Legal's platform-specific notice instead, so the numeric balance already audited for this activity stays untouched).
 
-4. **Stage 3 — Spend the frame.** The team picks a target frame rate (30 / 60 / 90fps); Round 1's budget is `1000/fps` minus the fixed ~10ms camera/VIO/tracking overhead. Four categories — grounding, lighting, audio, legibility — are picked freely, each with a `min`/`max` requirement. **Rendering & assets is not a fifth free pick any more** — it is locked to whatever stage 2's scene costs, shown as a fixed line item the team cannot toggle. The team justifies its spend, locks in, gets throttled (a brief-specific ratio of their own Round 1 budget), renegotiates in Round 2, and gets a one-sentence auto-generated summary to read out.
+4. **Features.** A yes/no prediction across the same four categories Spend will use — grounding, lighting, audio, legibility — before the room has seen a single cost number. Compared against what Round 1 actually spent real budget on, in Optimise.
 
-Nothing is client-trusted for scoring, at any stage. The licence verdict, the scene totals and category coverage, the derived rendering cost, and every Round 1/Round 2 millisecond total and cut/added diff are all recomputed server-side in one Function, from the raw pick ids — against hand-synced copies of the cost tables in `data/source-data.js`, `data/scene-data.js` and `data/frame-data.js`. One team submission at the very end of stage 3 covers the whole pipeline; stages 1 and 2 only write to `localStorage` until then.
+5. **Source.** Three listings for the same hero prop: a **clean, safe, unoptimised** stock file; a **cheap, pre-optimised, licence-risky** listing; and a **commissioned/original** asset with no licence question but a mid-range cost. Each one opens its real, self-hosted `.glb` in a live three.js viewer and reads real triangle/draw-call/texture stats straight out of the file — the same binary-GLB parser the Model Lab's `autopsy.html` uses. The team picks one, gives it a real licence verdict, and locks it in — no going back.
+
+6. **Build.** The hero asset is placed automatically, non-removable. The team adds a setting piece, 2–4 decor items and one interface element from a small generic prop catalogue, under a shared cap that includes the hero. Locking in computes the scene's rendering cost and carries it forward.
+
+7. **Audio.** Its own screen, ahead of the rest of the spend — pick from the same audio options Spend used to bury inside one long category list, with a running total against the shared Round 1 budget before grounding, lighting or legibility exist yet.
+
+8. **Spend (Round 1).** Target frame rate, then grounding / lighting / legibility, each with a `min`/`max` requirement. Rendering is not a free pick — it is locked to whatever Build's scene costs.
+
+9. **Optimise (the throttle + Round 2).** The budget shrinks by a brief-specific ratio. The room renegotiates, and sees a callback to what it said in Discuss and predicted in Features, next to what it actually spent.
+
+10. **Legal.** The credit from Source, a platform-specific notice (a native app needs an app-store disclosure a web link does not), and a confirmation that the credit lives somewhere a viewer could actually find it.
+
+11. **Ship.** The one and only point where anything is sent to the server — a single submission covering all eleven stages — followed by a one-sentence auto-generated summary to read out.
+
+Nothing is client-trusted for scoring. The licence verdict, the scene totals and category coverage, the derived rendering cost, and every Round 1/Round 2 millisecond total and cut/added diff are all recomputed server-side in one Function, from the raw pick ids — against hand-synced copies of the cost tables in `data/source-data.js`, `data/scene-data.js` and `data/frame-data.js`. Discuss/Platform/Features/Legal are recorded, not scored — there is no "correct" platform or feature prediction, only the real comparison Optimise already shows the team live.
 
 ## Structure
 
 ```
-source.html             stage 1 — sign-in, brief, licence the hero asset
-scene.html              stage 2 — build the scene around the locked hero asset
-index.html              stage 3 — the frame budget (rendering cost now derived, not picked)
+intro.html              Brief, Discuss, Platform, Features + sign-in
+source.html             Source — licence a hero asset via a real 3D viewer
+scene.html              Build — the scene around the locked hero asset
+index.html              Audio, Spend, Optimise, Legal, Ship
 admin.html              instructor board (key-gated)
 styles.css              brand design system, identical copy from the Model Lab / Hick's Law lab
-lab.css                 activity component layer — the frame-budget visualizer, plus the Model
-                        Lab's listing/reveal/requirements-checklist components, ported verbatim
-common.js               window.ML — shared helpers: identity, the source->scene->frame pipeline
-                        handoff (getPipe/setPipe), the brief hash, API, CSV
-data/frame-data.js      stage 3: fps tiers, categories, ground/light/audio/legibility options,
-                        the nine briefs, and the render-cost-from-scene formula — retune here
-data/source-data.js     stage 1: the three hero-asset cost profiles + nine briefs' worth of listings
-data/scene-data.js      stage 2: the generic scene prop catalogue, categories, caps
-panels/frame-panel.js   admin board renderer + CSV export — covers all three stages
+lab.css                 activity component layer — the frame-budget visualizer, the stage
+                        timeline, the Model Lab's viewer/listing/reveal components, ported
+common.js               window.ML — shared helpers: identity, the pipeline handoff
+                        (getPipe/setPipe), the brief hash, the stage timeline, API, CSV
+data/frame-data.js      fps tiers, categories, AR platforms, the nine briefs, and the
+                        render-cost-from-scene formula — retune here
+data/source-data.js     the three hero-asset cost profiles (real, measured) + the file each
+                        one opens, and the nine briefs' worth of listings built from them
+data/scene-data.js      the generic scene prop catalogue, categories, caps
+models/                 the three real, self-hosted .glb files Source's viewer opens —
+                        see models/README.md for real licences and why these three
+panels/frame-panel.js   admin board renderer + CSV export — covers every stage
 functions/api/          the one Pages Function, server-side scoring for the whole pipeline
 ```
 
@@ -51,7 +72,7 @@ Design system is the same one used across the other course activities: cream and
 
 ## Deploy (Cloudflare Pages, free tier)
 
-Static site plus one Pages Function. The free plan covers it easily: unlimited bandwidth for static assets, 100k Function requests/day, and a KV free tier of 100k reads / 1,000 writes per day. One team's final submission (covering all three stages) is one write.
+Static site plus one Pages Function. The free plan covers it easily: unlimited bandwidth for static assets, 100k Function requests/day, and a KV free tier of 100k reads / 1,000 writes per day. One team's final submission (covering every stage) is one write.
 
 **There is deliberately no `wrangler.toml`.** When a Pages project has one, Cloudflare treats it as the single source of truth and **ignores every binding set in the dashboard**, including encrypted secrets — that would force the admin key into plaintext in this repo. Configuring in the dashboard keeps the key secret and the KV id out of git.
 
@@ -67,8 +88,9 @@ The `functions/` directory is auto-detected. No build step, no config file.
 3. **Bind KV and set the admin key** — project → *Settings* → *Bindings*:
    - KV namespace binding: variable name **`RESULTS`** → the namespace from step 1
    - Environment variable **`ADMIN_KEY`** → **click Encrypt** → the key you will type into `admin.html`
+   - Check the binding is set on the **Production** environment specifically, not just Preview — the live `.pages.dev` URL serves Production.
 
-4. **Redeploy.** Bindings only attach at build time — the deployment that ran before you added them will keep returning 500 on every save. *Deployments* → *Retry deployment*, or push any commit.
+4. **Redeploy.** Bindings only attach at build time — the deployment that ran before you added them will keep returning 500 on every save (`KV binding RESULTS not configured`). *Deployments* → *Retry deployment*, or push any commit.
 
 Pushing to `main` redeploys automatically from then on.
 
@@ -77,7 +99,7 @@ Pushing to `main` redeploys automatically from then on.
 | Error | Cause |
 |---|---|
 | `Invalid KV namespace ID` | A `wrangler.toml` with a placeholder id is present. Delete it. |
-| Saves return **500**, `KV binding RESULTS not configured` | Bindings added but not redeployed since, or the variable is not named exactly `RESULTS` |
+| Saves (or the board) return **500**, `KV binding RESULTS not configured` | Bindings added but not redeployed since, the binding is on Preview instead of Production, or the variable is not named exactly `RESULTS` |
 | Board returns **401** | `ADMIN_KEY` unset, or you are typing a different key |
 
 ## Running it as an online / Zoom session
@@ -86,27 +108,28 @@ Rough shape of a 35–40 minute slot — see `TEACHING.md` for the full run-of-s
 
 | Time | What |
 |---|---|
-| 0:00–0:03 | Share `source.html` in chat. Read the scenario aloud, and the "commit before you look" rule |
-| 0:03–0:10 | Breakout rooms, stage 1. Named reporter per room. Locking in carries the hero asset forward automatically |
-| 0:10–0:20 | Breakout rooms, stage 2. Building the rest of the scene around the locked hero asset |
+| 0:00–0:05 | Share `intro.html` in chat. Read the brief aloud, then Discuss / Platform / Features — quick, no mechanics yet |
+| 0:05–0:12 | Breakout rooms, Source. Named reporter per room. Locking in carries the hero asset forward automatically |
+| 0:12–0:20 | Breakout rooms, Build |
 | 0:20–0:22 | Back in the main room. Do **not** explain the rendering-cost link yet — just say "lock in, then wait" |
-| 0:22–0:24 | Everyone opens stage 3 together and reads the "locked in from stage 2" callout — this is the reveal that the scene they just built is the rendering cost, not a fresh pick |
-| 0:24–0:34 | Breakout rooms, Round 1 then the throttle then Round 2, same shape as before |
-| 0:34–0:38 | Main room. Open `admin.html`, hit Refresh, and run the plenary off the board's callouts across all three stages |
+| 0:22–0:24 | Everyone opens Audio together and reads the "locked in from Build" callout — the first moment the pipeline's coupling becomes visible |
+| 0:24–0:34 | Breakout rooms: Audio, then Spend (Round 1), the throttle, Optimise (Round 2) |
+| 0:34–0:36 | Legal Notices, then Ship |
+| 0:36–0:40 | Main room. Open `admin.html`, hit Refresh, and run the plenary off the board's callouts across every stage |
 
-Add `?demo=1` to `source.html` to seed a fake team identity for rehearsing on the projector — carry the same query string through to `scene.html` and `index.html` if you want the whole rehearsal run to skip a real submission (a `?demo=1` run on stage 3 never calls the server).
+Add `?demo=1` to `intro.html` to seed a fake team identity for rehearsing on the projector — a `?demo=1` run never calls the server on Ship, so it cannot pollute the results.
 
-One submission per team, enforced in `localStorage`, written once at the end of stage 3. A team that genuinely needs to redo the whole pipeline can clear site data.
+One submission per team, enforced in `localStorage`, written once at Ship. A team that genuinely needs to redo the whole pipeline can clear site data.
 
 ## Retuning the content
 
 Three data files, each plain data with no logic:
 
-- `data/source-data.js` — the three hero-asset cost profiles (`clean` / `cheap` / `commission`) and the nine briefs' worth of listings built from them
+- `data/source-data.js` — the three hero-asset cost profiles (`clean` / `cheap` / `commission`, real measured numbers — see `models/README.md`) and the nine briefs' worth of listings built from them
 - `data/scene-data.js` — the generic scene prop catalogue, category requirements, and the scene-wide caps
-- `data/frame-data.js` — the fps tiers, the four freely-picked categories, the nine briefs' throttle ratios, and the formula that turns a scene's draw calls + texture memory into a rendering-ms cost
+- `data/frame-data.js` — the fps tiers, the AR platform options, the four freely-picked categories, the nine briefs' throttle ratios, and the formula that turns a scene's draw calls + texture memory into a rendering-ms cost
 
-**If you change any cost number, cap, or requirement in any of these three files, update the matching copy in `functions/api/frame-results.js` too** — the server never reads the client data files, by design, so they have to be kept in sync by hand (same convention as the Model Lab's own budget activity).
+**If you change any cost number, cap, or requirement in any of these three files, update the matching copy in `functions/api/frame-results.js` too** — the server never reads the client data files, by design, so they have to be kept in sync by hand (same convention as the Model Lab's own budget activity). If you ever swap one of the three `.glb` files in `models/`, re-measure it with the same parser (see `models/README.md`) rather than hand-tuning a number, and re-run the scene-feasibility audit before shipping.
 
 ## Privacy
 

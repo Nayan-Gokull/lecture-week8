@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Ship It — Source the Asset — INTE 42312</title>
-<meta name="description" content="Stage 1 of 3: pick a licensed hero asset for your AR brief by opening its real file in a real viewer, not by reading a description." />
+<meta name="description" content="Source the asset: pick a licensed hero asset for your AR brief by opening its real file in a real viewer, not by reading a description." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,600&display=swap" rel="stylesheet" />
@@ -22,66 +22,22 @@
     </span>
     <span class="hero-text">
       <span class="hero-title">Ship It</span>
-      <span class="hero-sub">Stage 1 of 3 &middot; Source the asset</span>
+      <span class="hero-sub">Source the asset</span>
     </span>
   </div>
 
   <main class="main-stage">
 
-    <!-- ============ TEAM SIGN-IN ============ -->
-    <section id="signin">
-      <div class="card narrow">
-        <h1>Source, build, ship.</h1>
-        <p class="lead">One continuous pipeline in three stages: licence a hero asset, budget the scene you build it into, then survive a real frame budget with it. About 35&ndash;40 minutes total, in breakout rooms throughout.</p>
-
-        <div class="field">
-          <label for="team">Team name or breakout room number</label>
-          <input class="input" id="team" maxlength="60" autocomplete="off" placeholder="e.g. Room 4, or The Normals" />
-        </div>
-
-        <button type="button" class="link-toggle" id="memToggle">+ Add who is in the room</button>
-        <div class="field" id="memField" hidden>
-          <label for="members">Names, separated by commas</label>
-          <input class="input" id="members" maxlength="200" autocomplete="off" placeholder="Ayesha, Ben, Chidi, Dan" />
-        </div>
-
-        <div class="btnrow">
-          <button class="btn primary" id="go">Start &rarr;</button>
-        </div>
-        <p class="fine">One submission per team, at the very end of stage 3. Every room gets a different brief, decided by your team name.</p>
-      </div>
-    </section>
-
-    <!-- ============ BRIEF ============ -->
-    <section id="brief" hidden>
-      <div class="teamid">
-        <span class="who" id="whoName"></span><span class="mem" id="whoMem"></span>
-      </div>
-
-      <div class="card">
-        <h1>Your brief</h1>
-        <div class="brief-scenario">
-          <span class="tag" id="briefTag"></span>
-          <p id="briefText"></p>
-        </div>
-
-        <div class="callout gold">
-          <b>What happens across the three stages.</b>
-          <p><b>Stage 1 (here):</b> pick a hero asset for this brief and give it a real licence verdict. <b>Stage 2:</b> build the rest of the scene around it, under real triangle / draw call / texture caps. <b>Stage 3:</b> ship the whole thing under a real per-frame time budget.</p>
-        </div>
-
-        <p class="lead">Three listings, same object, three different trade-offs. Each one opens a real file in a real viewer &mdash; read the numbers off the actual model, not off the listing's own claims. What you pick here is not just a licence verdict &mdash; it is the asset you are stuck building the rest of your scene around.</p>
-
-        <div class="btnrow">
-          <button class="btn primary" id="startCases">See the listings &rarr;</button>
-        </div>
-      </div>
-    </section>
-
     <!-- ============ CASES ============ -->
-    <section id="case" hidden>
+    <section id="case">
+      <div class="tl-wrap" id="timeline"></div>
       <div class="teamid">
         <span class="who" id="whoName2"></span><span class="mem" id="briefTag2"></span>
+      </div>
+
+      <div class="brief-scenario brief-recap">
+        <span class="tag" id="recapTag"></span>
+        <p id="recapText"></p>
       </div>
 
       <div class="card">
@@ -160,27 +116,31 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
-const { $, $$, esc, toast, show, bindPress, fmtInt, fmtBytes,
-        getIdentity, setIdentity, pickBrief, getPipe, setPipe } = ML;
+const { $, $$, esc, toast, show, bindPress, fmtInt, fmtBytes, renderTimeline,
+        getIdentity, pickBrief, getPipe, setPipe } = ML;
 
 const BRIEFS = window.FRAME_BRIEFS || [];
 const CASES_BY_BRIEF = window.SOURCE_CASES || {};
 const SOURCE_MODEL_FILES = window.SOURCE_MODEL_FILES || {};
 const SCENE_CAPS = window.SCENE_CAPS || { tris: 60000, draws: 35, textureMB: 45 };
 
-const params = new URLSearchParams(location.search);
-if (params.get("demo") === "1" && !getIdentity()) setIdentity("Demo Room", "rehearsal");
+/* This is stage 5 of the pipeline (Source), reached only after
+   intro.html's brief/discuss/platform/features run — there is no
+   sign-in here any more, and no team reaches this page without that
+   data already in their pipe. */
+const me = getIdentity();
+if (!me){ location.replace("intro.html"); throw new Error("no team identity"); }
+const pipe0 = getPipe(me.team);
+if (!pipe0.intro || !pipe0.intro.features){ location.replace("intro.html"); throw new Error("intro not completed"); }
 
-let me = getIdentity();
-let BRIEF = null;
-let CASES = [];
+const BRIEF = pickBrief(me.team, BRIEFS);
+const CASES = CASES_BY_BRIEF[BRIEF.id] || [];
 let selected = null;   // index into CASES currently being inspected
 let verdictPick = null;
 let locked = false;
 
 function paintWho(){
-  ["whoName","whoName2","whoName3"].forEach(id => { const el = $("#"+id); if (el) el.textContent = me.team; });
-  $("#whoMem").textContent = me.members ? "· " + me.members : "";
+  ["whoName2","whoName3"].forEach(id => { const el = $("#"+id); if (el) el.textContent = me.team; });
 }
 
 function paintPicker(){
@@ -315,28 +275,11 @@ function finish(){
   show("locked");
 }
 
-$("#memToggle").addEventListener("click", () => {
-  const f = $("#memField"); f.hidden = !f.hidden; if (!f.hidden) $("#members").focus();
-});
-
-$("#go").addEventListener("click", () => {
-  const team = $("#team").value.trim();
-  if (!team){ toast("Give your team a name first", true); $("#team").focus(); return; }
-  me = setIdentity(team, $("#members").value);
-  boot();
-});
-$("#team").addEventListener("keydown", e => { if (e.key === "Enter") $("#go").click(); });
-
-$("#startCases").addEventListener("click", () => { show("case"); });
-
 function boot(){
-  if (!me){ show("signin"); return; }
   paintWho();
-  BRIEF = pickBrief(me.team, BRIEFS);
-  CASES = CASES_BY_BRIEF[BRIEF.id] || [];
-  selected = null; locked = false;
-  $("#briefTag").textContent = BRIEF.title;
-  $("#briefText").textContent = BRIEF.scenario;
+  renderTimeline($("#timeline"), "source");
+  $("#recapTag").textContent = "Your brief: " + BRIEF.title;
+  $("#recapText").textContent = BRIEF.scenario;
   $("#briefTag2").textContent = BRIEF.title;
   paintPicker();
   $("#listingDetail").innerHTML = "";
@@ -348,7 +291,7 @@ function boot(){
   // to silently swap it out from under stage 2
   const pipe = getPipe(me.team);
   if (pipe.source){ show("locked"); finish(); return; }
-  show("brief");
+  show("case");
 }
 
 /* ============================================================
@@ -566,9 +509,9 @@ function showPreview(buf){
   }
 }
 
-if (!CASES.length && me) toast("Case data failed to load", true);
+if (!CASES.length) toast("Case data failed to load", true);
 
-if (me) boot(); else show("signin");
+boot();
 </script>
 </body>
 </html>

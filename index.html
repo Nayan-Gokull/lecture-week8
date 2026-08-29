@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Ship It — Spend the Frame — INTE 42312</title>
-<meta name="description" content="Stage 3 of 3: budget a realistic AR experience under a real frame budget, rendering cost included, then survive the thermal cliff." />
+<meta name="description" content="Add audio, spend a real frame budget, survive the thermal cliff, then clear the legal notices before you ship." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,600&display=swap" rel="stylesheet" />
@@ -23,7 +23,7 @@
     </span>
     <span class="hero-text">
       <span class="hero-title">Ship It</span>
-      <span class="hero-sub">Stage 3 of 3 &middot; Spend the frame</span>
+      <span class="hero-sub">Spend the frame</span>
     </span>
   </div>
 
@@ -31,9 +31,10 @@
 
     <!-- ============ BRIEF ============ -->
     <section id="brief" hidden>
+      <div class="tl-wrap" id="timeline"></div>
       <div class="teamid">
         <span class="who" id="whoName"></span><span class="mem" id="whoMem"></span>
-        <a class="swap" href="source.html">change team</a>
+        <a class="swap" href="intro.html">change team</a>
       </div>
 
       <div class="card">
@@ -58,19 +59,44 @@
         <div class="opts row" id="fpsOpts"></div>
         <p class="fine" id="fpsPreview">Pick a target above to see your Round 1 budget.</p>
 
-        <p class="lead">You will pick from four categories: grounding, lighting, audio and legibility. Rendering is already decided &mdash; it is whatever your Scene Build in stage 2 costs. Spend the rest the way your specific brief needs, not the way that seems cleverest in the abstract. There is no single right answer &mdash; there is a right answer <em>for your brief.</em></p>
+        <p class="lead">Rendering is already decided &mdash; it is whatever your Scene Build cost. You will add audio first, on its own screen, then spend what is left across grounding, lighting and legibility. There is no single right answer &mdash; there is a right answer <em>for your brief.</em></p>
 
         <div class="btnrow">
-          <button class="btn primary" id="startR1" disabled>Start Round 1 &rarr;</button>
+          <button class="btn primary" id="startR1" disabled>Add audio &rarr;</button>
         </div>
+      </div>
+    </section>
+
+    <!-- ============ AUDIO ============ -->
+    <section id="audio" hidden>
+      <div class="tl-wrap" id="timelineAudio"></div>
+      <div class="teamid">
+        <span class="who" id="whoNameAudio"></span><span class="mem" id="briefTagAudio"></span>
+      </div>
+
+      <div class="brief-scenario brief-recap">
+        <span class="tag" id="recapTagAudio"></span>
+        <p id="recapTextAudio"></p>
+      </div>
+
+      <div class="card">
+        <h2>Add audio</h2>
+        <p class="lead">Pick before you see grounding, lighting or legibility &mdash; audio does not get to compete against the other categories for attention once you are staring at all four at once.</p>
+        <div class="card" id="catListAudio"></div>
+        <p class="fine" id="audioTotal"></p>
+        <div class="btnrow">
+          <button class="btn primary" id="toRound1">Continue to the rest of the spend &rarr;</button>
+        </div>
+        <p class="fine" id="blockAudio"></p>
       </div>
     </section>
 
     <!-- ============ ROUND 1 ============ -->
     <section id="round1" hidden>
+      <div class="tl-wrap" id="timeline2"></div>
       <div class="teamid">
         <span class="who" id="whoName2"></span><span class="mem" id="briefTag2"></span>
-        <a class="swap" href="source.html">leave</a>
+        <a class="swap" href="intro.html">leave</a>
       </div>
 
       <div class="worksplit">
@@ -117,6 +143,7 @@
 
     <!-- ============ THROTTLE ============ -->
     <section id="throttle" hidden>
+      <div class="tl-wrap" id="timeline3"></div>
       <div class="teamid"><span class="who" id="whoName3"></span></div>
       <div class="card">
         <h1>Five minutes in.</h1>
@@ -131,8 +158,9 @@
       </div>
     </section>
 
-    <!-- ============ ROUND 2 ============ -->
+    <!-- ============ ROUND 2 / OPTIMISE ============ -->
     <section id="round2" hidden>
+      <div class="tl-wrap" id="timeline4"></div>
       <div class="teamid">
         <span class="who" id="whoName4"></span><span class="mem" id="briefTag4"></span>
       </div>
@@ -143,6 +171,7 @@
           <span class="tag" id="recapTagR2"></span>
           <p id="recapTextR2"></p>
         </div>
+        <div class="callout gold" id="callbackCard"></div>
         <div class="card" id="catList2"></div>
 
         <div class="card">
@@ -156,7 +185,7 @@
             <textarea class="input" id="note2" rows="2" maxlength="240" placeholder="e.g. we dropped the long reverb first, it was the single most expensive line and nobody would miss it"></textarea>
           </div>
           <div class="btnrow">
-            <button class="btn primary" id="submit" disabled>Lock in final answer &rarr;</button>
+            <button class="btn primary" id="submit" disabled>Lock in this answer &rarr;</button>
           </div>
           <p class="fine" id="block2">Fit under the new budget, and tell us which way you would have planned ahead.</p>
         </div>
@@ -184,9 +213,35 @@
       </div>
     </section>
 
+    <!-- ============ LEGAL NOTICES ============ -->
+    <section id="legal" hidden>
+      <div class="tl-wrap" id="timeline5"></div>
+      <div class="teamid"><span class="who" id="whoName5"></span></div>
+
+      <div class="card">
+        <h2>Legal notices, before you ship</h2>
+        <p class="lead">The last stop before this goes out under your team's name. Not new work &mdash; this is where you check the work you already did actually made it into the build.</p>
+
+        <div class="callout" id="legalAttrCard"></div>
+        <div class="callout gold" id="legalPlatformCard"></div>
+
+        <div class="field">
+          <label>
+            <input type="checkbox" id="legalConfirm" style="width:auto;margin-right:8px" />
+            We have put the required credit somewhere a viewer could actually find it &mdash; a credits screen or an about page, not a code comment nobody outside the team will ever open.
+          </label>
+        </div>
+
+        <div class="btnrow">
+          <button class="btn primary" id="toShip" disabled>Ship it &rarr;</button>
+        </div>
+      </div>
+    </section>
+
     <!-- ============ DONE ============ -->
     <section id="done" hidden>
-      <div class="teamid"><span class="who" id="whoName5"></span></div>
+      <div class="tl-wrap" id="timeline6"></div>
+      <div class="teamid"><span class="who" id="whoName6"></span></div>
       <div class="card" id="doneCard"></div>
     </section>
 
@@ -198,7 +253,7 @@
 <script>
 (function(){
   "use strict";
-  const { $, $$, esc, toast, show, clamp, bindPress,
+  const { $, $$, esc, toast, show, clamp, bindPress, renderTimeline,
           saveRun, markSubmitted, hasSubmitted, getIdentity, pickBrief, getPipe } = ML;
 
   const ACT = "frame";
@@ -219,7 +274,7 @@
   const DEMO = params.get("demo") === "1";
 
   const me = getIdentity();
-  if (!me){ location.replace("source.html"); return; }
+  if (!me){ location.replace("intro.html"); return; }
 
   const pipe = getPipe(me.team);
   if (!pipe.source){ location.replace("source.html"); return; }
@@ -245,10 +300,16 @@
   CATEGORIES.forEach(c => { catMap[c.id] = c; });
 
   function paintWho(){
-    ["whoName","whoName2","whoName3","whoName4","whoName5"].forEach(id => {
+    ["whoName","whoNameAudio","whoName2","whoName3","whoName4","whoName5","whoName6"].forEach(id => {
       const el = $("#" + id); if (el) el.textContent = me.team;
     });
     $("#whoMem").textContent = me.members ? "· " + me.members : "";
+  }
+
+  function paintTimelines(){
+    const map = { timeline: "audio", timelineAudio: "audio", timeline2: "spend",
+                  timeline3: "optimise", timeline4: "optimise", timeline5: "legal", timeline6: "ship" };
+    Object.keys(map).forEach(id => { const el = $("#" + id); if (el) renderTimeline(el, map[id]); });
   }
 
   let R1_CAP = null;
@@ -285,11 +346,16 @@
   }
 
   /* ---------- rendering the picklist ----------
-     round = 1 or 2. onToggle receives the option id. */
-  function renderCatList(mountSel, picks, cap, round){
+     round = 1 or 2. only, if given, restricts which categories render
+     here — audio gets pulled onto its own screen ahead of Round 1, so
+     Round 1's own list excludes it (still visible in the sidebar bar,
+     since paintStack draws from the full pick set regardless). Round 2
+     renegotiates everything, audio included, so it passes no filter. */
+  function renderCatList(mountSel, picks, cap, round, only){
     const mount = $(mountSel);
     let h = "";
-    CATEGORIES.forEach(cat => {
+    const cats = only ? CATEGORIES.filter(c => only.indexOf(c.id) !== -1) : CATEGORIES;
+    cats.forEach(cat => {
       const opts = OPTIONS.filter(o => o.category === cat.id);
 
       if (cat.locked){
@@ -369,10 +435,38 @@
     }).join("");
   }
 
+  /* ================= AUDIO (its own screen, ahead of Round 1) =================
+     Audio still spends from the same shared budget — this only changes
+     when it's decided, not how it's scored. Gated the same way the fps
+     picker is gated: a team can never lock in a combination here that
+     would leave Round 1 impossible, since there is no way back to this
+     screen once they move on (audio's own min is 0, so retreating to
+     "nothing" always exists as a fallback). */
+  function refreshAudio(){
+    renderCatList("#catListAudio", r1picks, R1_CAP, 1, ["audio"]);
+    const used = totalMs(r1picks);   // render + whatever audio has picked so far
+    const ok = used <= R1_CAP;
+    $("#audioTotal").textContent = "Running total so far (rendering + audio): " +
+      used.toFixed(1) + "ms of your " + R1_CAP.toFixed(1) + "ms Round 1 budget.";
+    $("#toRound1").disabled = !ok;
+    $("#blockAudio").textContent = ok
+      ? "Fits so far — grounding, lighting and legibility are still to come."
+      : "Over budget already from rendering and audio alone — remove an audio pick before continuing.";
+    $("#blockAudio").className = "fine" + (ok ? " okmsg" : "");
+  }
+
+  $("#catListAudio").addEventListener("click", e => {
+    const b = e.target.closest(".pick");
+    if (!b || b.disabled) return;
+    const id = b.dataset.id;
+    if (r1picks.has(id)) r1picks.delete(id); else r1picks.add(id);
+    refreshAudio();
+  });
+
   /* ================= ROUND 1 ================= */
 
   function refreshR1(){
-    renderCatList("#catList1", r1picks, R1_CAP, 1);
+    renderCatList("#catList1", r1picks, R1_CAP, 1, ["ground", "light", "legibility", "render"]);
     paintStack(r1picks, R1_CAP, "R1");
 
     const t = totalMs(r1picks);
@@ -436,7 +530,8 @@
 
   /* ================= SCREEN FLOW ================= */
 
-  $("#startR1").addEventListener("click", () => { refreshR1(); show("round1"); });
+  $("#startR1").addEventListener("click", () => { refreshAudio(); show("audio"); });
+  $("#toRound1").addEventListener("click", () => { refreshR1(); show("round1"); });
 
   $("#lockR1").addEventListener("click", () => {
     r2picks = new Set(r1picks); // renegotiation starts from what you already had
@@ -446,19 +541,72 @@
     show("throttle");
   });
 
-  $("#startR2").addEventListener("click", () => { refreshR2(); show("round2"); });
+  /* Callback to what the room said before any mechanics started
+     (intro.html's Discuss screen) and what it predicted it would need
+     (intro.html's Features screen) — a real comparison, not just a
+     reflective question, and it costs nothing new to score since it
+     only reads data already captured. */
+  function paintCallback(){
+    const intro = pipe.intro || {};
+    const feat = intro.features || {};
+    const CAT_LABEL = { ground: "Grounding", light: "Lighting", audio: "Audio", legibility: "Legibility" };
+    const predicted = Object.keys(feat).filter(k => feat[k]).map(k => CAT_LABEL[k] || k);
+    const actualCats = new Set();
+    r1picks.forEach(id => { const o = byId[id]; if (o && o.ms > 0 && CAT_LABEL[o.category]) actualCats.add(o.category); });
+    const actual = Object.keys(CAT_LABEL).filter(c => actualCats.has(c)).map(c => CAT_LABEL[c]);
+    let h = '<b>Before a single technical decision, your room said:</b>' +
+      '<p>&ldquo;' + esc(intro.discuss || "(no answer recorded)") + '&rdquo;</p>';
+    h += '<p><b>You predicted you would need:</b> ' + esc(predicted.length ? predicted.join(", ") : "nothing in particular") +
+      '. <b>Round 1 actually spent real money on:</b> ' + esc(actual.length ? actual.join(", ") : "nothing") + '.</p>';
+    $("#callbackCard").innerHTML = h;
+  }
 
-  $("#submit").addEventListener("click", async () => {
+  $("#startR2").addEventListener("click", () => { paintCallback(); refreshR2(); show("round2"); });
+
+  $("#submit").addEventListener("click", () => {
     $("#submit").disabled = true;
+    populateLegal();
+    paintTimelines();
+    show("legal");
+  });
+
+  function populateLegal(){
+    const s = pipe.source;
+    let attrHtml = '<b>Your Stage 1 credit</b>';
+    attrHtml += s.attribution
+      ? '<p>&ldquo;' + esc(s.attribution) + '&rdquo;</p>'
+      : '<p>No attribution was required for the asset you sourced (' + esc(s.licence) + ').</p>';
+    $("#legalAttrCard").innerHTML = attrHtml;
+
+    const intro = pipe.intro || {};
+    const platform = (window.AR_PLATFORMS || []).filter(p => p.id === intro.platform)[0];
+    let platHtml = '<b>Platform-specific notice</b>';
+    platHtml += (platform && platform.id === "native")
+      ? '<p>You picked <b>native ARKit / ARCore</b> &mdash; a real build needs an app-store listing disclosing camera use and every third-party asset licence, not just an in-app credits screen.</p>'
+      : '<p>You picked <b>handheld WebAR</b> &mdash; the browser handles the camera permission prompt, but the credit still has to live somewhere on the page a visitor could actually find it.</p>';
+    $("#legalPlatformCard").innerHTML = platHtml;
+
+    $("#legalConfirm").checked = false;
+    $("#toShip").disabled = true;
+  }
+
+  $("#legalConfirm").addEventListener("change", () => {
+    $("#toShip").disabled = !$("#legalConfirm").checked;
+  });
+
+  $("#toShip").addEventListener("click", async () => {
+    $("#toShip").disabled = true;
     const cutList   = [...r1picks].filter(id => !r2picks.has(id));
     const addedList = [...r2picks].filter(id => !r1picks.has(id));
     const payload = {
       team: me.team, members: me.members, brief: BRIEF.id, targetFps: TARGET_FPS,
       source: pipe.source,
       scene: pipe.scene,
+      intro: pipe.intro,
       round1: { picks: [...r1picks], justification: $("#just1").value.trim() },
       round2: { picks: [...r2picks], plannedAhead: plan, note: $("#note2").value.trim(),
                 cutList, addedList },
+      legal: { confirmed: true },
       ua: navigator.userAgent, ts: Date.now(),
     };
 
@@ -472,6 +620,7 @@
       }
     }
     renderDone(payload, cutList, addedList, sentOk);
+    paintTimelines();
     show("done");
   });
 
@@ -573,10 +722,13 @@
     $("#briefText").textContent = BRIEF.scenario;
     $("#briefTag2").textContent = BRIEF.title;
     $("#briefTag4").textContent = BRIEF.title;
+    $("#briefTagAudio").textContent = BRIEF.title;
     $("#recapTagR1").textContent = "Your brief: " + BRIEF.title;
     $("#recapTextR1").textContent = BRIEF.scenario;
     $("#recapTagR2").textContent = "Your brief: " + BRIEF.title;
     $("#recapTextR2").textContent = BRIEF.scenario;
+    $("#recapTagAudio").textContent = "Your brief: " + BRIEF.title;
+    $("#recapTextAudio").textContent = BRIEF.scenario;
     $("#renderSummary").textContent = pipe.source.caseTitle + " (" + pipe.source.licence + ") plus " +
       pipe.scene.picks.length + " scene prop" + (pipe.scene.picks.length === 1 ? "" : "s") + " comes to " +
       SCENE_TOTALS.draws + " draw calls and " + SCENE_TOTALS.textureMB + "MB — that is " +
@@ -584,6 +736,7 @@
     renderFpsOpts();
     $("#fpsPreview").textContent = "Pick a target above to see your Round 1 budget.";
     $("#startR1").disabled = true;
+    paintTimelines();
     show("brief");
   }
 

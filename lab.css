@@ -14,6 +14,32 @@
 
 [hidden]{ display:none !important; }
 
+/* ---------- pipeline stage timeline ----------
+   Eleven neutral-labelled steps, shown on every page of the four-page
+   pipeline. Deliberately says nothing about what happens inside a
+   future stage — only where you are. */
+.tl-wrap{
+  display:flex; flex-wrap:wrap; align-items:center; gap:0;
+  padding:9px 12px; margin:0 0 14px;
+  background:var(--surface); border:var(--border-w) solid var(--ink);
+  border-radius:var(--radius-sm); box-shadow:var(--shadow-1);
+  font-size:11px; overflow-x:auto;
+}
+.tl-step{
+  display:inline-flex; align-items:center; gap:5px; white-space:nowrap;
+  font-weight:800; letter-spacing:.02em; color:var(--muted); padding:2px 2px;
+}
+.tl-dot{ width:8px; height:8px; border-radius:50%; flex:0 0 auto;
+  background:var(--cream-2); border:2px solid var(--line-2); }
+.tl-line{ flex:1 1 10px; min-width:8px; height:2px; background:var(--line-2); margin:0 2px; }
+.tl-step.tl-done{ color:var(--emerald-700); }
+.tl-step.tl-done .tl-dot{ background:var(--emerald-700); border-color:var(--emerald-700); }
+.tl-step.tl-now{ color:var(--ink); }
+.tl-step.tl-now .tl-dot{ background:var(--forest-700); border-color:var(--forest-700);
+  box-shadow:0 0 0 3px var(--emerald-100); }
+.tl-step.tl-next{ color:var(--muted); opacity:.6; }
+@media (max-width:600px){ .tl-wrap{ font-size:10px; } }
+
 /* ---------- team identity strip ---------- */
 .teamid{
   display:flex; align-items:center; gap:10px; flex-wrap:wrap;

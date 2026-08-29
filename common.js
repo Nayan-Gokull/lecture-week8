@@ -235,6 +235,37 @@
     });
   }
 
+  /* ---------- pipeline stage timeline ("Ship It" only) ----------
+     A persistent stepper shown on every page of the four-page
+     pipeline (intro/source/scene/index), so a team always knows
+     where they are without ever seeing what's INSIDE a stage they
+     haven't reached — labels are deliberately outcome-neutral (e.g.
+     "Optimise", never "Throttle") so the timeline itself can never
+     spoil a reveal. Same eleven stages, same order, on every page;
+     each page passes which one is current. */
+  const PIPELINE_STAGES = [
+    { id: "brief",    label: "Brief" },
+    { id: "discuss",  label: "Discuss" },
+    { id: "platform", label: "Platform" },
+    { id: "features", label: "Features" },
+    { id: "source",   label: "Source" },
+    { id: "build",    label: "Build" },
+    { id: "audio",    label: "Audio" },
+    { id: "spend",    label: "Spend" },
+    { id: "optimise", label: "Optimise" },
+    { id: "legal",    label: "Legal" },
+    { id: "ship",     label: "Ship" },
+  ];
+
+  function renderTimeline(mount, currentId) {
+    if (!mount) return;
+    const curIdx = PIPELINE_STAGES.findIndex((s) => s.id === currentId);
+    mount.innerHTML = PIPELINE_STAGES.map((s, i) => {
+      const state = i < curIdx ? "done" : i === curIdx ? "now" : "next";
+      return '<span class="tl-step tl-' + state + '"><span class="tl-dot"></span>' + esc(s.label) + "</span>";
+    }).join('<span class="tl-line"></span>');
+  }
+
   window.ML = {
     $, $$, esc, clamp,
     fmtInt, fmtBytes, fmtCompact, pct, stamp,
@@ -243,5 +274,6 @@
     hasSubmitted, markSubmitted, clearSubmitted,
     toast, saveRun, fetchRuns, clearRuns,
     download, toCSV, bindPress, show, bindTabs,
+    renderTimeline,
   };
 })();
