@@ -57,8 +57,8 @@
         <ul class="reqlist" id="reqBrief"></ul>
 
         <div class="callout">
-          <b>Whatever this scene costs to render carries straight into stage 3.</b>
-          <p>There is no separate "rendering tier" to pick later &mdash; the draw calls and texture memory you commit to here <em>are</em> the rendering cost your frame budget has to absorb.</p>
+          <b>Draw calls and texture memory break a scene long before triangle count does.</b>
+          <p>Most assets come in more than one version. You can only place one version of any given object &mdash; choosing the cheaper version is not cheating, it is the entire job.</p>
         </div>
 
         <div class="btnrow">
@@ -112,7 +112,7 @@
       <div class="teamid"><span class="who" id="whoName3"></span><span class="mem">Last step</span></div>
       <div class="card">
         <h2>Which lever did you pull, and what did you give up?</h2>
-        <p class="lead">Your scene fits. What matters is knowing what it cost you, and what it will cost your frame budget in stage 3.</p>
+        <p class="lead">Your scene fits. Anyone can get there by deleting things. What matters is knowing what it cost you.</p>
 
         <div class="opts" id="leverOpts"></div>
 
@@ -324,9 +324,6 @@
       h += '<tr><td class="team">' + esc(a.name) + '</td><td class="num">' + fmtInt(a.tris) + '</td><td class="num">' + a.materials + '</td><td class="num">' + a.textureMB + '</td></tr>';
     });
     h += '</tbody><tfoot><tr><td><b>Total</b></td><td class="num"><b>' + fmtInt(T.tris) + '</b></td><td class="num"><b>' + T.draws + '</b></td><td class="num"><b>' + T.textureMB + '</b></td></tr></tfoot></table></div>';
-
-    h += '<div class="callout green"><b>What this costs in stage 3:</b><p>' + T.draws + ' draw calls and ' + T.textureMB +
-      'MB of texture works out to <b>' + renderMs.toFixed(1) + 'ms</b> of rendering cost, every frame, before you spend a single millisecond on grounding, lighting, audio or legibility.</p></div>';
 
     h += '<div class="callout"><b>When your room is called, say this:</b>' +
          '<p>&ldquo;We came in at ' + fmtInt(T.tris) + ' triangles, ' + T.draws + ' draw calls and ' +
