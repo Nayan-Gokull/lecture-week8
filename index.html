@@ -45,7 +45,7 @@
         </div>
 
         <div class="callout gold">
-          <b>Locked in from stage 2:</b>
+          <b>Locked in from Build:</b>
           <p id="renderSummary"></p>
         </div>
 
@@ -265,19 +265,23 @@
   const BRIEFS     = window.FRAME_BRIEFS;
 
   /* ---------- identity + pipeline gating ----------
-     This is stage 3 of 3. There is no sign-in here any more — a team
-     arrives with an identity already set in source.html, and this page
-     refuses to run at all without a completed source.html + scene.html
-     for that same team, since Round 1's rendering cost is derived from
-     what scene.html computed. */
+     This is the last of the four pages. There is no sign-in here any
+     more — a team arrives with an identity already set in intro.html,
+     and this page refuses to run at all without a completed source.html
+     + scene.html for that same team, since Round 1's rendering cost is
+     derived from what scene.html computed. */
   const params = new URLSearchParams(location.search);
-  const DEMO = params.get("demo") === "1";
 
   const me = getIdentity();
   if (!me){ location.replace("intro.html"); return; }
 
   const pipe = getPipe(me.team);
   if (!pipe.source){ location.replace("source.html"); return; }
+  // ?demo=1 is only ever typed on intro.html, which stamps it into the
+  // pipe — none of the plain-href navigations between pages carry a
+  // query string forward. Still honoured directly here too, in case
+  // someone appends it to this page's URL specifically.
+  const DEMO = params.get("demo") === "1" || !!pipe.demo;
   if (!pipe.scene){ location.replace("scene.html"); return; }
 
   const RENDER_MS = pipe.scene.renderMs;
@@ -307,7 +311,7 @@
   }
 
   function paintTimelines(){
-    const map = { timeline: "audio", timelineAudio: "audio", timeline2: "spend",
+    const map = { timeline: "spend", timelineAudio: "audio", timeline2: "spend",
                   timeline3: "optimise", timeline4: "optimise", timeline5: "legal", timeline6: "ship" };
     Object.keys(map).forEach(id => { const el = $("#" + id); if (el) renderTimeline(el, map[id]); });
   }
@@ -549,11 +553,15 @@
   function paintCallback(){
     const intro = pipe.intro || {};
     const feat = intro.features || {};
-    const CAT_LABEL = { ground: "Grounding", light: "Lighting", audio: "Audio", legibility: "Legibility" };
-    const predicted = Object.keys(feat).filter(k => feat[k]).map(k => CAT_LABEL[k] || k);
+    // Same labels intro.html's Features screen used (from catMap,
+    // which is built from the same FRAME_CATEGORIES both pages load) —
+    // so a team comparing the two screens sees identical wording, and
+    // render (locked, never predicted) is excluded on both sides.
+    const featCatIds = Object.keys(catMap).filter(id => !catMap[id].locked);
+    const predicted = featCatIds.filter(id => feat[id]).map(id => catMap[id].label);
     const actualCats = new Set();
-    r1picks.forEach(id => { const o = byId[id]; if (o && o.ms > 0 && CAT_LABEL[o.category]) actualCats.add(o.category); });
-    const actual = Object.keys(CAT_LABEL).filter(c => actualCats.has(c)).map(c => CAT_LABEL[c]);
+    r1picks.forEach(id => { const o = byId[id]; if (o && o.ms > 0 && catMap[o.category] && !catMap[o.category].locked) actualCats.add(o.category); });
+    const actual = featCatIds.filter(id => actualCats.has(id)).map(id => catMap[id].label);
     let h = '<b>Before a single technical decision, your room said:</b>' +
       '<p>&ldquo;' + esc(intro.discuss || "(no answer recorded)") + '&rdquo;</p>';
     h += '<p><b>You predicted you would need:</b> ' + esc(predicted.length ? predicted.join(", ") : "nothing in particular") +
@@ -572,7 +580,7 @@
 
   function populateLegal(){
     const s = pipe.source;
-    let attrHtml = '<b>Your Stage 1 credit</b>';
+    let attrHtml = '<b>Your Source credit</b>';
     attrHtml += s.attribution
       ? '<p>&ldquo;' + esc(s.attribution) + '&rdquo;</p>'
       : '<p>No attribution was required for the asset you sourced (' + esc(s.licence) + ').</p>';
@@ -610,8 +618,12 @@
       ua: navigator.userAgent, ts: Date.now(),
     };
 
-    let sentOk = false, savedId = "";
-    if (!DEMO){
+    let sentOk = false, savedId = "", alreadySubmitted = false;
+    if (hasSubmitted(ACT)){
+      // Already shipped once for this team — show the same summary
+      // again without writing a second record to the board.
+      alreadySubmitted = true; sentOk = true;
+    } else if (!DEMO){
       try {
         const res = await saveRun(ENDPOINT, payload);
         markSubmitted(ACT, res.id); savedId = res.id; sentOk = true;
@@ -619,12 +631,12 @@
         sentOk = false;
       }
     }
-    renderDone(payload, cutList, addedList, sentOk);
+    renderDone(payload, cutList, addedList, sentOk, alreadySubmitted);
     paintTimelines();
     show("done");
   });
 
-  function renderDone(payload, cutList, addedList, sentOk){
+  function renderDone(payload, cutList, addedList, sentOk, alreadySubmitted){
     const r1t = totalMs(r1picks), r2t = totalMs(r2picks);
     const r2cap = round2CapFor();
     const futureProofed = r1t <= r2cap;
@@ -640,7 +652,8 @@
       (plan === "yes" ? " We think we could have planned ahead." : " We think this was not predictable from the brief.");
 
     let h = '<h1>' + (sentOk ? "Locked in and sent." : "Locked in.") + '</h1>';
-    if (!sentOk) h += '<p class="lead">Could not reach the server, so read this out instead.</p>';
+    if (alreadySubmitted) h += '<p class="lead">Already submitted once for this team, so this run was not saved again — here is your summary regardless.</p>';
+    else if (!sentOk) h += '<p class="lead">Could not reach the server, so read this out instead.</p>';
 
     h += '<div class="callout' + (futureProofed ? " green" : " gold") + '"><b>' +
       (futureProofed ? "Future-proofed." : "Caught by the throttle.") + '</b><p>' +

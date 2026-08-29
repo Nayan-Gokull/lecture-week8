@@ -81,7 +81,7 @@
             <div class="btnrow">
               <button class="btn primary" id="lock" disabled>Lock in this asset &rarr;</button>
             </div>
-            <p class="fine">No going back once you lock it in &mdash; this is the hero asset stage 2 builds around.</p>
+            <p class="fine">No going back once you lock it in &mdash; this is the hero asset Build works around.</p>
           </div>
         </div>
       </div>
@@ -228,7 +228,7 @@ $("#lock").addEventListener("click", () => {
 
   renderReveal(c, ok, outcome, attribution);
   $("#lock").disabled = false;
-  $("#lock").textContent = "See what this means for stage 2 →";
+  $("#lock").textContent = "See what this means for Build →";
 
   setPipe(me.team, {
     source: {
@@ -251,7 +251,7 @@ function renderReveal(c, ok, outcome, attribution){
          '<p class="attrcmp"><span class="lbl">Yours</span>' + esc(attribution || "(blank)") + '</p>' +
          '<p class="attrcmp model"><span class="lbl">A string that holds up</span>' + esc(c.modelAttribution) + '</p></div>';
   }
-  h += '<div class="callout"><b>What this locks in for stage 2:</b><p>Your hero prop is <b>' + c.model.tris.toLocaleString() + ' triangles, ' + c.model.materials + ' draw calls, ' + c.model.textureMB + 'MB of texture</b> &mdash; the same numbers just measured on the left. That is placed automatically when you get there &mdash; you build the rest of the scene around it.</p></div>';
+  h += '<div class="callout"><b>What this locks in for Build:</b><p>Your hero prop is <b>' + c.model.tris.toLocaleString() + ' triangles, ' + c.model.materials + ' draw calls, ' + c.model.textureMB + 'MB of texture</b> &mdash; the same numbers just measured on the left. That is placed automatically when you get there &mdash; you build the rest of the scene around it.</p></div>';
   h += '</div></div>';
   $("#revealMount").innerHTML = h;
   $("#revealMount").scrollIntoView({behavior:"smooth", block:"nearest"});
@@ -270,7 +270,7 @@ function finish(){
       '"><span class="lbl">Verdict</span><span class="v" style="font-size:16px">' + esc(OUTCOME_LABEL[s.outcome] || s.outcome) + '</span></div>' +
   '</div>';
   if (s.attribution) h += '<p class="fine">Your attribution: &ldquo;' + esc(s.attribution) + '&rdquo;</p>';
-  h += '<div class="btnrow"><a class="btn primary" href="scene.html">Stage 2: build the scene &rarr;</a></div>';
+  h += '<div class="btnrow"><a class="btn primary" href="scene.html">Next: build the scene &rarr;</a></div>';
   $("#lockedCard").innerHTML = h;
   show("locked");
 }
@@ -288,7 +288,7 @@ function boot(){
 
   // a team that already locked a hero asset for this brief and comes
   // back to this page (refresh, or clicked back) should not be able
-  // to silently swap it out from under stage 2
+  // to silently swap it out from under Build
   const pipe = getPipe(me.team);
   if (pipe.source){ show("locked"); finish(); return; }
   show("case");
@@ -446,7 +446,7 @@ function paintStats(s){
   ];
   $("#stats").innerHTML = cells.map(([lbl, v, note]) =>
     '<div class="stat"><span class="lbl">' + esc(lbl) + '</span><span class="v">' + v + '</span><span class="note">' + esc(note) + '</span></div>').join("");
-  $("#statNote").innerHTML = "This listing's real draw-call and texture cost, measured against the same triangle / draw-call / texture caps your whole scene has to fit under in stage 2.";
+  $("#statNote").innerHTML = "This listing's real draw-call and texture cost, measured against the same triangle / draw-call / texture caps your whole scene has to fit under in Build.";
 }
 
 async function loadFromURL(url, label){

@@ -239,7 +239,7 @@
         '<td class="num' + (r.round2.overBudget ? " over" : "") + '">' + r.round2.ms.toFixed(1) + '</td>' +
         '<td>' + (r.futureProofed ? '<span class="badge ship">future-proofed</span>' : '<span class="badge fix">caught</span>') + '</td>' +
         '<td>' + cutTxt + '</td>' +
-        '<td>' + esc(r.round2.plannedAhead || "&mdash;") + '</td>' +
+        '<td>' + (r.round2.plannedAhead ? esc(r.round2.plannedAhead) : "&mdash;") + '</td>' +
         '<td>' + esc(r.round2.note || "") + '</td>' +
         '<td>' + esc(ML.stamp(r.ts)) + '</td></tr>';
     });

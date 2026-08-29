@@ -142,10 +142,22 @@
 
   const BRIEFS = window.FRAME_BRIEFS || [];
   const PLATFORMS = window.AR_PLATFORMS || [];
-  const CATEGORIES = window.FRAME_CATEGORIES || [];
+  // Rendering & assets is excluded — it is never a free pick anywhere
+  // downstream (Build's scene locks it), so predicting it makes no
+  // sense as a question and would leak a raw category id into the
+  // Optimise-screen callback if left in.
+  const CATEGORIES = (window.FRAME_CATEGORIES || []).filter(c => !c.locked);
 
   const params = new URLSearchParams(location.search);
-  if (params.get("demo") === "1" && !getIdentity()) setIdentity("Demo Room", "rehearsal");
+  // ?demo=1 only ever appears in this page's own URL — none of the
+  // later pages carry the query string forward (they navigate via
+  // plain hrefs), so the flag is stamped into the pipe itself here,
+  // once, and every later page reads it from there instead of from
+  // its own location.search.
+  if (params.get("demo") === "1" && !getIdentity()){
+    const demoMe = setIdentity("Demo Room", "rehearsal");
+    setPipe(demoMe.team, { demo: true });
+  }
 
   let me = getIdentity();
   let BRIEF = null;
@@ -247,7 +259,7 @@
     // a team that already finished intro for this identity and comes
     // back here should carry on to source.html, not redo it and risk
     // a different platform/feature prediction than what they already
-    // built stage 2/3 against
+    // built Source/Build against
     if (getPipe(me.team).intro && getPipe(me.team).intro.features){
       location.href = "source.html";
       return;

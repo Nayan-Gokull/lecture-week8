@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Ship It — Build the Scene — INTE 42312</title>
-<meta name="description" content="Stage 2 of 3: build the rest of the scene around your sourced hero asset, under real triangle / draw call / texture caps." />
+<meta name="description" content="Build the scene: assemble the rest of it around your sourced hero asset, under real triangle / draw call / texture caps." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,600&display=swap" rel="stylesheet" />
@@ -43,7 +43,7 @@
         </div>
 
         <div class="callout gold">
-          <b>Locked in from stage 1:</b>
+          <b>Locked in from Source:</b>
           <p id="heroSummary"></p>
         </div>
 
@@ -334,7 +334,7 @@
          T.textureMB + ' MB. We pulled the <b>' + esc(String(leverLbl).toLowerCase()) + '</b> lever. ' +
          'What the customer loses: ' + esc(just) + '&rdquo;</p></div>';
 
-    h += '<div class="btnrow"><a class="btn primary" href="index.html">Stage 3: spend the frame &rarr;</a></div>';
+    h += '<div class="btnrow"><a class="btn primary" href="index.html">Next: add audio &amp; spend the frame &rarr;</a></div>';
     $("#doneCard").innerHTML = h;
   }
 
@@ -345,7 +345,7 @@
   if (pipe.scene){
     // already built this stage — show the same "done" summary again
     // rather than letting a refresh silently re-open editing on a
-    // scene that stage 3 may already be reading from
+    // scene that the next page may already be reading from
     renderDone(pipe.scene.totals, pipe.scene.picks, pipe.scene.justification, pipe.scene.renderMs);
     show("done");
   } else {
