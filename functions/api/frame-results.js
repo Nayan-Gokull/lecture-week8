@@ -86,11 +86,13 @@ const BRIEF_THROTTLE_RATIO = {
 /* ---------------- Stage 1: source the asset ----------------
    Mirrors data/source-data.js's three profiles. clean and commission
    are always shippable as-is; cheap is the arguable NC/ND case, and
-   only "attr" or "change" count as a defensible verdict on it. */
+   only "attr" or "change" count as a defensible verdict on it.
+   The model specs are real, measured numbers from the three self-
+   hosted files in models/ (see models/README.md) — not estimates. */
 const SOURCE_PROFILES = {
-  clean:      { model: { tris: 22000, materials: 5, textureMB: 13 }, licenceRisk: false, kind: "fixed",    accepted: ["asis"] },
-  cheap:      { model: { tris: 5200,  materials: 2, textureMB: 4  }, licenceRisk: true,  kind: "arguable", accepted: ["attr", "change"], needsAttribution: true },
-  commission: { model: { tris: 10500, materials: 3, textureMB: 7  }, licenceRisk: false, kind: "fixed",    accepted: ["asis"] },
+  clean:      { model: { tris: 39936, materials: 4, textureMB: 14.7 }, licenceRisk: false, kind: "fixed",    accepted: ["asis"] },
+  cheap:      { model: { tris: 3072,  materials: 1, textureMB: 5.3  }, licenceRisk: true,  kind: "arguable", accepted: ["attr", "change"], needsAttribution: true },
+  commission: { model: { tris: 4196,  materials: 3, textureMB: 10.7 }, licenceRisk: false, kind: "fixed",    accepted: ["asis"] },
 };
 
 /* ---------------- Stage 2: build the scene ----------------

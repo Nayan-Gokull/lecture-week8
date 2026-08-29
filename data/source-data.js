@@ -16,34 +16,58 @@
    listing is fictional. Licence names (CC0, CC BY, CC BY-NC, CC BY-ND)
    are real and used correctly.
 
+   THIS STAGE OPENS A REAL FILE IN A REAL VIEWER — source.html loads
+   whichever listing a team selects into a live three.js viewer and
+   reads its stats straight out of the .glb container, using the exact
+   binary-GLB parser the Model Lab's autopsy.html already uses (ported,
+   not reinvented). The three files are real, self-hosted, and
+   documented in models/README.md — see that file for two important
+   disclosures that also appear on-screen: (1) each listing's licence
+   text below is fictional, written for this exercise, and is NOT the
+   real file's real licence; (2) the file is a stand-in prop for
+   reading real specs on, not literally the finished object your
+   brief describes.
+
    Where the three cost profiles come from
    ----------------------------------------
-   Not profiler output, same caveat as everywhere else in this
-   activity — but the relative shape is a real, common pattern, not
-   an invented one: an unoptimised "as downloaded" stock/scanned asset
-   reliably carries more geometry and more unmerged materials than a
-   hand-built or hand-optimised one, because nobody at the marketplace
-   had a reason to optimise it for a specific real-time budget. This
-   is exactly the sofa-hero (58k/6/12) vs sofa-lod (22k/4/12) vs
-   sofa-lod2 (9k/3/6) pattern in the Model Lab's own Budget Table,
-   scaled down here to a single hero prop instead of a whole room:
+   Real, measured numbers — not estimates — parsed directly from the
+   three files in models/ with the same parser source.html itself
+   uses. `materials` here is each file's real measured DRAW count, not
+   its raw material count, to match this course's "one draw call per
+   material placed" convention (see models/README.md for both figures
+   per file). The three were chosen, out of several candidates
+   downloaded and measured, specifically because their real weight
+   classes reproduce the same shape the Model Lab's own Budget Table
+   uses for its sofa-hero (58k/6/12) vs sofa-lod (22k/4/12) pattern,
+   scaled down to a single hero prop:
 
-     clean       — safe licence, unoptimised: the "as downloaded" file.
-     cheap       — licence-risky, pre-optimised: whoever posted it did
-                   the optimisation work already, which is also plausibly
-                   why the licence is stricter (protecting resale value).
+     clean       — safe licence, unoptimised: heaviest on every axis.
+     cheap       — licence-risky, pre-optimised: lightest on every axis —
+                   whoever posted it did the optimisation work already,
+                   which is also plausibly why the licence is stricter.
      commission  — always safe (original work, no licence question at
-                   all), moderate cost: reasonably optimised, but a team
-                   modelling or commissioning something themselves in
-                   the time available will not out-optimise a specialist.
+                   all), moderate cost: competent, unremarkable work,
+                   in between the other two on every axis.
    ============================================================ */
 (function () {
   "use strict";
 
+  // Real measured stats — see models/README.md for the full table and
+  // the exact method. Keep these in sync with functions/api/frame-
+  // results.js's SOURCE_PROFILES by hand if the files ever change.
   window.SOURCE_MODEL_PROFILES = {
-    clean:      { tris: 22000, materials: 5, textureMB: 13 },
-    cheap:      { tris: 5200,  materials: 2, textureMB: 4  },
-    commission: { tris: 10500, materials: 3, textureMB: 7  },
+    clean:      { tris: 39936, materials: 4, textureMB: 14.7 },  // sheenchair.glb
+    cheap:      { tris: 3072,  materials: 1, textureMB: 5.3  },  // clearcoatwicker.glb
+    commission: { tris: 4196,  materials: 3, textureMB: 10.7 },  // glamvelvetsofa.glb
+  };
+
+  // Which real, self-hosted file source.html's viewer opens for each
+  // pick tier — shared across all nine briefs, same convention as the
+  // cost profiles above. See models/README.md for real licence/credit.
+  window.SOURCE_MODEL_FILES = {
+    clean:      "models/sheenchair.glb",
+    cheap:      "models/clearcoatwicker.glb",
+    commission: "models/glamvelvetsofa.glb",
   };
 
   // Same four verdict buttons as the Model Lab's licence.html.
@@ -69,7 +93,6 @@
       licence: "CC0",
       licenceName: "CC0 1.0 — Public Domain Dedication",
       sourceNote: "Downloaded from a large 3D model marketplace, listed as “as-scanned, unoptimised”.",
-      details: [".glb · 22,000 tris", "5 materials", "4K source scan, 13MB of texture"],
       smallPrint: "“The creator has waived all rights to this work worldwide under copyright law. You can use it for any purpose, without asking permission.”",
       needsAttribution: false,
       options: OPTIONS,
@@ -92,7 +115,6 @@
       licence: "CC BY-NC 4.0",
       licenceName: "CC BY-NC 4.0 — Attribution-NonCommercial",
       sourceNote: "Downloaded from an indie asset marketplace, already optimised for real-time use.",
-      details: [".glb · 5,200 tris", "2 materials", "4MB of texture, pre-compressed"],
       smallPrint: "“Free for non-commercial use with attribution. For commercial licensing, contact the creator directly.”",
       scenario: GRADED_SCENARIO,
       needsAttribution: true,
@@ -124,7 +146,6 @@
       licence: "Original work",
       licenceName: "No third-party licence — modelled or commissioned by your own team",
       sourceNote: "Built from scratch for this brief, or commissioned from a course-mate / freelancer with a written work-for-hire agreement.",
-      details: [".glb · 10,500 tris", "3 materials", "7MB of texture, hand-optimised in the time available"],
       smallPrint: "“No licence question at all — you (or whoever you commissioned, with agreement in writing) own this outright.”",
       needsAttribution: false,
       options: OPTIONS,
